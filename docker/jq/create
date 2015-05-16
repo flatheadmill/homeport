@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+pushd $(dirname $0) > /dev/null
+context=$(pwd -P)
+popd > /dev/null
+parent=$(dirname $context)
+
+prefix="$parent"/build/opt
+
+docker build -t bigeasy/jq-build -f "$context/Dockerfile" "$parent"
+docker run -i -v "$prefix":/opt:rw -t bigeasy/jq-build ./compile
