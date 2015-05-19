@@ -5,6 +5,6 @@ set -e
 pushd $(dirname $0) > /dev/null
 context=$(pwd -P)
 popd > /dev/null
-parent=$(dirname $context)
+project=${context%/*/*}
 
-docker build -t bigeasy/env -f "$context/Dockerfile" "$parent"
+docker build -t bigeasy/env -f "$context/Dockerfile" "$project"

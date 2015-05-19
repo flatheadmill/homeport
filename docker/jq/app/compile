@@ -7,5 +7,5 @@ git clone https://github.com/stedolan/jq.git /src/jq
 cd /src/jq
 git pull origin master
 autoreconf -i
-./configure --prefix=/opt
+./configure --prefix=/usr/local
 make install

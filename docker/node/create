@@ -8,8 +8,6 @@ popd > /dev/null
 parent=$(dirname $context)
 
 prefix="$parent"/build/usr/local
-app="$parent"/jq/app
-
-mkdir -p "$prefix"
+app="$parent"/node/app
 
 docker run -it -v "$prefix":/usr/local:rw -v "$app":/app:ro bigeasy/gcc /app/compile

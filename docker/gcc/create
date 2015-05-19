@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+pushd $(dirname $0) > /dev/null
+context=$(pwd -P)
+popd > /dev/null
+parent=${context%/*}
+
+
+prefix="$parent"/build/opt
+
+docker build -t bigeasy/gcc -f "$context/Dockerfile" "$parent"
