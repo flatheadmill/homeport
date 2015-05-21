@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+pushd $(dirname $0) > /dev/null
+context=$(pwd -P)
+popd > /dev/null
+project=${context%/*/*}
+
+docker build -t bigeasy/syncthing -f "$context/Dockerfile" "$project"
