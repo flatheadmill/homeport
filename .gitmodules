@@ -1,0 +1,3 @@
+[submodule "getopt"]
+	path = getopt
+	url = git@github.com:agriffis/pure-getopt.git
