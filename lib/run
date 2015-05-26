@@ -1,0 +1,9 @@
+#!/bin/bash
+
+launch='docker run -it -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -h homeport --volumes-from homeport_home bigeasy/homeport-shell zsh -l'
+
+if which boot2docker > /dev/null; then
+    boot2docker ssh -At sh -c "'""$launch""'"
+else
+    $launch
+fi
