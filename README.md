@@ -28,3 +28,22 @@ setup as out of the box as possible.
 
 Instead of sharing a directory on the host, I've shared the home directory of
 the Docker contianer through Samba, or at least that is the plan.
+
+## Building
+
+Sketching out a build because a friend actually tried to use this...
+
+Specify a UNIX user name and a Docker Hub account name.
+
+```
+$ ./configure --user alan --account bigeasy
+$ docker/env/create
+```
+
+Create data volume based home directories.
+
+```
+$ docker/env/create
+```
+
+Create your home directories by creating

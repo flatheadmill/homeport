@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -e
+
+pushd $(dirname $0) > /dev/null
+context=$(pwd -P)
+popd > /dev/null
+
+source "$context/getopt/getopt.bash"
+
+declare argv
+argv=$(getopt -o u:a: --long user:,account: -- "$@") || return
+eval "set -- $argv"
+
+while true; do
+    case "$1" in
+        --user | -u)
+            shift
+            user=$1
+            shift
+            ;;
+        --account | -a)
+            shift
+            account=$1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+cat <<EOF > ~/.homeport
+homeport_unix_user=$user
+homeport_docker_account=$account
+EOF
