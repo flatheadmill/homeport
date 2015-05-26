@@ -1,9 +1,45 @@
 #!/bin/bash
 
-launch='docker run -it -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -h homeport --volumes-from homeport_home bigeasy/homeport-shell zsh -l'
-
-if which boot2docker > /dev/null; then
-    boot2docker ssh -At sh -c "'""$launch""'"
-else
-    $launch
+if [ "$1" == "module" ]; then
+  echo "Please do not execute these programs directly. Use homeport."
+  exit 1
 fi
+
+echo "$(dirname $0)"
+
+pushd $(dirname $0) > /dev/null
+HOMEPORT_PATH=$(pwd -P)
+popd > /dev/null
+
+source "$HOMEPORT_PATH/getopt.bash"
+
+function usage() {
+  local code=$1
+  echo "$USAGE"
+  exit $code
+}
+
+function abend() {
+  local message=$1
+  echo "error: $message"
+  usage 1
+}
+
+function homeport_exec() {
+    local command=$1
+
+    [ -z "$command" ] && abend "TODO: write usage"
+
+    local action="$HOMEPORT_PATH/lib/$command"
+
+    [ ! -e "$action"  ] && abend "invalid action: homeport $command"
+
+    shift
+
+    export HOMEPORT_PATH
+    export -f usage abend getopt
+
+    "$action" $@
+}
+
+homeport_exec $@
