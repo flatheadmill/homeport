@@ -6,7 +6,7 @@ pushd $(dirname $0) > /dev/null
 context=$(pwd -P)
 popd > /dev/null
 
-source "$context/getopt/getopt.bash"
+source "$context/getopt.bash"
 
 declare argv
 argv=$(getopt -o u:a: --long user:,account: -- "$@") || return
