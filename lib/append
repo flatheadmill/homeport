@@ -28,12 +28,21 @@ dir=$(mktemp -d -t homeport_append)
 mkdir "$dir/src/" && \
     rsync -av "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
 
+mkdir -p "$dir/src/packages/formula"
 while [ $# -ne 0 ]; do
-    echo "0 $1" >> "$dir/src/packages"
+    package=$1
     shift
+    if [[ "$package" = */* ]]; then
+    echo "$package"
+        relative="packages/formula/${package##*/}"
+        cp "$package" "$dir/src/$relative"
+        package="/usr/share/homeport/$relative"
+    fi
+    echo "$package" >> "$dir/src/packages/manifest"
 done
 
-cat "$dir/src/packages"
+find "$dir"
+cat "$dir/src/packages/manifest"
 
 cat <<EOF > "$dir/Dockerfile"
 FROM $homeport_docker_hub_account/homeport_shell:latest

@@ -2,14 +2,20 @@
 
 set -e
 
-cat /usr/share/homeport/packages
-while read -r level package; do
-    echo level $level package $package
-    if [ -e /usr/share/homeport/container/formula/$package ]; then
-        /usr/share/homeport/container/formula/$package
+mkdir -p /var/lib/homeport/formula
+cat /usr/share/homeport/packages/manifest
+while read -r package; do
+    echo package $package
+    if [[ "$package" = */* ]]; then
+        base="${package##*/}"
+        destination="/var/lib/homeport/formula/$base"
+        cp "$package" "$destination"
+        package="formula/$base"
+        $destination
     else
         apt-get install -y $package
     fi
-done < /usr/share/homeport/packages
+    echo "$package" >> /var/lib/homeport/manifest
+done < /usr/share/homeport/packages/manifest
 
-rm -f /usr/share/homeport/packages
+rm -rf /usr/share/homeport/packages
