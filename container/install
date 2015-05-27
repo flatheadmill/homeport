@@ -1,13 +1,14 @@
 #!/bin/bash
 
-apt-get update -y
+set -e
 
-while [ $# -ne 0 ]; do
-    resource=$1
-    shift
-    if [ -e /usr/share/homeport/container/formula/$resource ]; then
-        /usr/share/homeport/container/formula/$resource
+while read -r level pacakge; do
+    echo $level $package
+    if [ -e /usr/share/homeport/container/formula/$package ]; then
+        /usr/share/homeport/container/formula/$package
     else
-        apt-get install -y $resource
+        apt-get install -y $package
     fi
-done
+done < /usr/share/homeport/packages
+
+rm -f /usr/share/homeport/packages

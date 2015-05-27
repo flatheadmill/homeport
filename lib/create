@@ -14,7 +14,7 @@ homeport module <<-usage
 usage
 
 declare argv
-argv=$(getopt -o u:a: --long user:,account: -- "$@") || return
+argv=$(getopt -o u:h:a --long append,user:,hub: -- "$@") || return
 eval "set -- $argv"
 
 while true; do
@@ -24,9 +24,13 @@ while true; do
             homeport_unix_user=$1
             shift
             ;;
-        --account | -a)
+        --append | -a)
             shift
-            homeport_docker_account=$1
+            append=true
+            ;;
+        --hub | -h)
+            shift
+            homeport_docker_hub_account=$1
             shift
             ;;
         --)
@@ -49,17 +53,33 @@ function cleanup() {
 mkdir "$dir/src/" && \
     rsync -av "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
 
+while [ $# -ne 0 ]; do
+    echo "0 $1" >> "$dir/src/packages"
+    shift
+done
+
+cat "$dir/src/packages"
+
 #docker run --name homeport_build_http -v "$dir":/usr/share/nginx/html:ro nginx
 
+base=ubuntu
+
+if [ "$append" -eq 1 ]; then
+    base="$homeport_docker_hub_account/homeport_shell:latest"
+fi
+
 cat <<EOF > "$dir/Dockerfile"
-FROM ubuntu
+FROM $base
 
 MAINTAINER Alan Gutierrez, alan@prettyrobots.com
 
 RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove
 COPY ./src/ /usr/share/homeport/
-RUN /usr/share/homeport/container/install $@
+RUN /usr/share/homeport/container/install
 
 EOF
 
-docker build -t $homeport_docker_account/homeport_shell "$dir"
+docker build -t $homeport_docker_hub_account/homeport_shell:intermediate "$dir"
+
+docker tag -f $homeport_docker_hub_account/homeport_shell:intermediate \
+    $homeport_docker_hub_account/homeport_shell:latest
