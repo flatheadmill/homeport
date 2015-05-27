@@ -1,0 +1,13 @@
+#!/bin/bash
+
+apt-get update -y
+
+while [ $# -ne 0 ]; do
+    resource=$1
+    shift
+    if [ -e /usr/share/homeport/container/formula/$resource ]; then
+        /usr/share/homeport/container/formula/$resource
+    else
+        apt-get install -y $resource
+    fi
+done
