@@ -36,8 +36,10 @@ while true; do
     esac
 done
 
-echo $user $account
-exit
+if ! { docker images | awk '{ print $1 }' | grep '^'$account'/jq$' > /dev/null; } then
+    echo exists
+fi
+docker run --rm ubuntu echo 1
 
 cat <<EOF > ~/.homeport
 homeport_unix_user=$user
