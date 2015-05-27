@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+homeport module <<-usage
+    usage: homeport flatten
+usage
+
+eval $(homeport_configuration)
+
+trap cleanup EXIT SIGTERM SIGINT
+
+function cleanup() {
+    local pids=$(jobs -pr)
+    [ -n "$pids" ] && kill $pids
+    rm -rf "$dir"
+}
+
+dir=$(mktemp -d -t homeport_flatten)
+
+mkdir "$dir/src/" "$dir/export/" && \
+    rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
+
+docker run --rm homeport_shell:$USER tar -C /var/lib/homeport -cf - . | \
+    tar -C "$dir/export/" -xf -
+
+declare -a arguments
+
+function listing() {
+    while [ $# -ne 0 ]; do
+        echo $1
+        shift
+    done
+}
+
+while read -r package; do
+    if [[ $package = */* ]]; then
+        arguments+=("$dir/export/$package")
+    else
+        arguments+=($package)
+    fi
+done < "$dir/export/manifest"
+
+docker tag -f homeport_shell:$USER $homeport_docker_hub_account/homeport_shell:recovery
+{ "$HOMEPORT_PATH/homeport" clear && "$HOMEPORT_PATH/homeport" append "${arguments[@]}"; } && \
+    docker rmi $homeport_docker_hub_account/homeport_shell:recovery || \
+    docker tag -f $homeport_docker_hub_account/homeport_shell:recovery homeport_shell:$USER
