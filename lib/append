@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -e
+
+homeport module <<-usage
+    usage: homeport create --user [version] --account [Docker Hub account]
+
+    description:
+
+        Creates a configuration that stores the user name in a data container
+        for use with all Homeport Create a configuration file in a volume named
+        "/etc/data container named "homeport_configuration" for use with
+        homeport.
+usage
+
+eval $(homeport_configuration)
+
+trap cleanup EXIT SIGTERM SIGINT
+
+function cleanup() {
+    local pids=$(jobs -pr)
+    [ -n "$pids" ] && kill $pids
+    rm -rf "$dir"
+}
+
+dir=$(mktemp -d -t homeport_append)
+
+mkdir "$dir/src/" && \
+    rsync -av "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
+
+while [ $# -ne 0 ]; do
+    echo "0 $1" >> "$dir/src/packages"
+    shift
+done
+
+cat "$dir/src/packages"
+
+cat <<EOF > "$dir/Dockerfile"
+FROM $homeport_docker_hub_account/homeport_shell:latest
+
+MAINTAINER Alan Gutierrez, alan@prettyrobots.com
+
+COPY ./src/ /usr/share/homeport/
+RUN /usr/share/homeport/container/install
+EOF
+
+docker build -t $homeport_docker_hub_account/homeport_shell:intermediate "$dir"
+
+docker tag -f $homeport_docker_hub_account/homeport_shell:intermediate \
+    $homeport_docker_hub_account/homeport_shell:latest
+
+docker tag -f $homeport_docker_hub_account/homeport_shell homeport_shell:$USER
+docker rmi $homeport_docker_hub_account/homeport_shell:intermediate

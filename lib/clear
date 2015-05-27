@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+homeport module <<-usage
+    usage: homeport create --user [version] --hub [Docker Hub account]
+
+    description:
+
+        Creates a configuration that stores the user name in a data container
+        for use with all Homeport Create a configuration file in a volume named
+        "/etc/data container named "homeport_configuration" for use with
+        homeport.
+usage
+
+eval $(homeport_configuration)
+
+docker tag -f $homeport_docker_hub_account/homeport_shell:latest \
+    $homeport_docker_hub_account/homeport_shell:outgoing
+docker tag -f $homeport_docker_hub_account/homeport_shell:foundation \
+    $homeport_docker_hub_account/homeport_shell:latest
+docker tag -f $homeport_docker_hub_account/homeport_shell homeport_shell:$USER
+docker rmi $homeport_docker_hub_account/homeport_shell:outgoing

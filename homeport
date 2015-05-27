@@ -68,6 +68,17 @@ function abend() {
   usage 1
 }
 
+function homeport_configuration() {
+    homeport_shell=$(docker images | awk -v user=$USER '
+        $1 == "homeport_shell" && $2 == user {print $1":"$2}
+    ')
+
+    [  -z "$homeport_shell" ] && abend 'no shell. please create shell with `homeport create`'
+
+    echo "homeport_shell=$homeport_shell"
+    docker run --rm $homeport_shell cat /etc/homeport/configuration
+}
+
 function homeport_exec() {
     local command=$1
 
@@ -80,7 +91,7 @@ function homeport_exec() {
     shift
 
     export HOMEPORT_PATH
-    export -f usage abend getopt homeport
+    export -f usage abend getopt homeport homeport_configuration
 
     "$action" $@
 }

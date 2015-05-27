@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+cat /usr/share/homeport/packages
+while read -r level package; do
+    echo level $level package $package
+    if [ -e /usr/share/homeport/container/formula/$package ]; then
+        /usr/share/homeport/container/formula/$package
+    else
+        apt-get install -y $package
+    fi
+done < /usr/share/homeport/packages
+
+rm -f /usr/share/homeport/packages

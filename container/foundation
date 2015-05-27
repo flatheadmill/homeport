@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+apt-get update && apt-get -y upgrade && apt-get -y autoremove
+
+mkdir /etc/homeport
+mv /usr/share/homeport/configuration /etc/homeport/
+
+source /etc/homeport/configuration
+
+/usr/sbin/groupadd --gid 701 $homeport_unix_user
+/usr/sbin/useradd --gid 701 --uid 701 $homeport_unix_user
+
+echo "$homeport_unix_user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
