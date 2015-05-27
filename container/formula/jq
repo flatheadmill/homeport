@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-get install -y build-essential git automake libtool
+apt-get install -y make git automake libtool
 
 mkdir /tmp/src && \
     git clone https://github.com/stedolan/jq.git /tmp/src/jq && \

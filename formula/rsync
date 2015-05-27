@@ -1,6 +1,0 @@
-#!/bin/bash
-
-install rsync
-
-run <<EOF
-EOF
