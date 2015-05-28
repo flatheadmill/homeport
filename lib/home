@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+homeport module <<-usage
+    usage: homeport home
+usage
+
+eval $(homeport_configuration)
+
+homeport_home=$(docker ps --no-trunc | awk -v user=$USER '$(NF) = "homeport_home_"user { print $(NF) }')
+
+if [ -z "$homeport_home" ]; then
+    docker run --name "homeport_home_"$USER -v /home/$homeport_unix_user \
+        homeport_shell:$USER /bin/true
+fi
