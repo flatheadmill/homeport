@@ -3,7 +3,7 @@
 set -e
 
 mkdir -p /var/lib/homeport/formula
-cat /usr/share/homeport/packages/manifest
+
 while read -r package; do
     echo package $package
     if [[ "$package" = */* ]]; then
