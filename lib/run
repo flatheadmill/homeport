@@ -1,9 +1,37 @@
 #!/bin/bash
 
-launch='docker run -it -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -h homeport --volumes-from homeport_home bigeasy/homeport-shell zsh -l'
+set -e
 
+homeport module <<-usage
+    usage: homeport run
+usage
+
+eval $(homeport_configuration)
+echo here
+
+trap cleanup EXIT SIGTERM SIGINT
+
+function cleanup() {
+    local pids=$(jobs -pr)
+    [ -n "$pids" ] && kill $pids
+}
+
+launch='docker run '
+launch+='--rm -it '
+launch+='-u '$homeport_unix_user' '
+launch+='-v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent '
+launch+='-h homeport '
+launch+='--volumes-from homeport_home_alan '
+launch+='homeport_shell:'$USER' '
+
+if [ $# -eq 0 ]; then
+    launch+='/home/'$homeport_unix_user'/.homeportrc'
+fi
+
+printf '%q' "$launch"
 if which boot2docker > /dev/null; then
-    boot2docker ssh -At sh -c "'""$launch""'"
+    boot2docker ssh -At sh -c $(printf '%q' "$launch")
+    # "'""$launch""'"
 else
     $launch
 fi
