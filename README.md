@@ -36,7 +36,7 @@ Sketching out a build because a friend actually tried to use this...
 Specify a UNIX user name and a Docker Hub account name.
 
 ```
-$ ./configure --user alan --account bigeasy
+$ ./homeport configure --user alan --account bigeasy
 $ docker/env/create
 ```
 
