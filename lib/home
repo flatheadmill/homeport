@@ -8,7 +8,7 @@ usage
 
 eval $(homeport_configuration)
 
-homeport_home=$(docker ps --no-trunc | awk -v user=$USER '$(NF) == "homeport_home_"user { print $(NF) }')
+homeport_home=$(docker ps --no-trunc -a | awk -v user=$USER '$(NF) == "homeport_home_"user { print $(NF) }')
 
 if [ -z "$homeport_home" ]; then
     docker run --name "homeport_home_"$USER -v /home/$homeport_unix_user \
