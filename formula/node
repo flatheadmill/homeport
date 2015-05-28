@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+apt-get install -y curl python make g++
+
+mkdir /tmp/src
+cd /tmp/src
+curl -LO http://nodejs.org/dist/v0.12.3/node-v0.12.3.tar.gz
+[ $(sha256sum node-v0.12.3.tar.gz | cut -f1 -d' ') = \
+    'e65d83c6f2c874e28f65c5e192ac0acd2bbb52bfcf9d77e33442d6765a3eb9da' ]
+tar zxvf node-v0.12.3.tar.gz
+cd /tmp/src/node-*
+./configure --prefix=/usr/local
+make install
+rm -rf /tmp/src
