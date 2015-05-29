@@ -102,11 +102,15 @@ while [ -L "$homeport_file" ]; do
     expanded=$(homeport_readlink "$homeport_file")
     pushd "${homeport_file%/*}" > /dev/null
     pushd "${expanded%/*}" > /dev/null
-    HOMEPORT_PATH=$(pwd)
+    homeport_path=$(pwd)
     popd > /dev/null
     popd > /dev/null
-    homeport_file="$HOMEPORT_PATH/${homeport_file##*/}"
+    homeport_file="$homeport_path/${homeport_file##*/}"
 done
+
+pushd "${homeport_file%/*}" > /dev/null
+HOMEPORT_PATH=$(pwd)
+popd > /dev/null
 
 source "$HOMEPORT_PATH/getopt.bash"
 
