@@ -30,7 +30,6 @@ eval $(homeport_configuration $homeport_tag)
 
 homeport_home=$(docker ps --no-trunc -a | awk -v user=$USER '$(NF) == "homeport_home_"user { print $(NF) }')
 
-echo $homeport_home
 if [ -z "$homeport_home" ]; then
-    echo docker run --name "homeport_home_"$USER -v /home/$homeport_unix_user ubuntu /bin/true
+    docker run --name "homeport_home_"$USER -v /home/$homeport_unix_user ubuntu /bin/true
 fi

@@ -33,7 +33,7 @@ while true; do
     esac
 done
 
-eval $(homeport_configuration)
+eval $(homeport_configuration $homeport_tag)
 
 docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag:latest \
     $homeport_docker_hub_account/homeport_shell-$homeport_tag:outgoing

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo ECHO ECHO ECHO "$@"

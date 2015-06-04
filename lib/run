@@ -45,11 +45,13 @@ launch+='homeport_shell-'$homeport_tag':'$USER' '
 
 if [ $# -eq 0 ]; then
     launch+='/home/'$homeport_unix_user'/.homeportrc'
+else
+    launch+=$1
+    shift
 fi
 
 if which boot2docker > /dev/null; then
-    boot2docker ssh -At sh -c $(printf '%q' "$launch")
-    # "'""$launch""'"
+    boot2docker ssh -At sh -c $(printf '%q' "$launch") "$@"
 else
     $launch
 fi

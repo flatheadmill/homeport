@@ -6,8 +6,6 @@ homeport module <<-usage
     usage: homeport flatten
 usage
 
-eval $(homeport_configuration)
-
 declare argv
 argv=$(getopt -o t: --long tag: -- "$@") || return
 eval "set -- $argv"
@@ -27,6 +25,9 @@ while true; do
             ;;
     esac
 done
+
+homeport_configuration $homeport_tag
+eval $(homeport_configuration $homeport_tag)
 
 trap cleanup EXIT SIGTERM SIGINT
 
@@ -55,7 +56,14 @@ function listing() {
 
 while read -r package; do
     if [[ $package = */* ]]; then
-        arguments+=("$dir/export/$package")
+        formula=${package%:*}
+        list=${package#*:}
+        argument="$dir/export/$formula"
+        if [ ! -z "$list" ]; then
+            argument+=":$list"
+        fi
+        echo "PACKAGE ARGUMENT $package $argument"
+        arguments+=($argument)
     else
         arguments+=($package)
     fi
@@ -63,6 +71,6 @@ done < "$dir/export/manifest"
 
 echo $homeport_tag
 docker tag -f homeport_shell-$homeport_tag:$USER $homeport_docker_hub_account/homeport_shell-$homeport_tag:recovery
-{ "$HOMEPORT_PATH/homeport" clear && "$HOMEPORT_PATH/homeport" append "${arguments[@]}"; } && \
+{ "$HOMEPORT_PATH/homeport" clear --tag $homeport_tag && "$HOMEPORT_PATH/homeport" append --tag $homeport_tag "${arguments[@]}"; } && \
     docker rmi $homeport_docker_hub_account/homeport_shell-$homeport_tag:recovery || \
     docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag:recovery homeport_shell-$homeport_tag:$USER

@@ -2,18 +2,34 @@
 
 set -e
 
+function commas () {
+    local IFS=,
+    for arg in $1; do
+        echo $arg
+    done
+}
+
 mkdir -p /var/lib/homeport/formula
 
 while read -r package; do
     echo package $package
     if [[ "$package" = */* ]]; then
-        base="${package##*/}"
+        formula=${package%:*}
+        list=${package#*:}
+        if [ "$list" = "$package" ]; then
+            list=
+        fi
+        echo "FL $formula $list"
+        base="${formula##*/}"
         destination="/var/lib/homeport/formula/$base"
-        cp "$package" "$destination"
+        cp "$formula" "$destination"
         package="formula/$base"
-        $destination
+        if [ ! -z "$list" ]; then
+            package+=":$list"
+        fi
+        commas $list | xargs $destination
     else
-        apt-get install -y $package
+        commas $package | xargs apt-get install -y
     fi
     echo "$package" >> /var/lib/homeport/manifest
 done < /usr/share/homeport/packages/manifest

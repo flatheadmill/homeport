@@ -51,10 +51,15 @@ while [ $# -ne 0 ]; do
     package=$1
     shift
     if [[ "$package" = */* ]]; then
-    echo "$package"
-        relative="packages/formula/${package##*/}"
-        cp "$package" "$dir/src/$relative"
+        formula=${package%:*}
+        list=${package#*:}
+        echo LIST $list
+        relative="packages/formula/${formula##*/}"
+        cp "$formula" "$dir/src/$relative"
         package="/usr/share/homeport/$relative"
+        if [ ! -z "$list" ]; then
+            package+=":$list"
+        fi
     fi
     echo "$package" >> "$dir/src/packages/manifest"
 done
