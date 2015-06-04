@@ -6,11 +6,31 @@ homeport module <<-usage
     usage: homeport home
 usage
 
-eval $(homeport_configuration)
+declare argv
+argv=$(getopt -o t: --long tag: -- "$@") || return
+eval "set -- $argv"
+
+homeport_tag=default
+
+while true; do
+    case "$1" in
+        --tag | -t)
+            shift
+            homeport_tag=$1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+eval $(homeport_configuration $homeport_tag)
 
 homeport_home=$(docker ps --no-trunc -a | awk -v user=$USER '$(NF) == "homeport_home_"user { print $(NF) }')
 
+echo $homeport_home
 if [ -z "$homeport_home" ]; then
-    docker run --name "homeport_home_"$USER -v /home/$homeport_unix_user \
-        homeport_shell:$USER /bin/true
+    echo docker run --name "homeport_home_"$USER -v /home/$homeport_unix_user ubuntu /bin/true
 fi

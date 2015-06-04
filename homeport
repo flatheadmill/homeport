@@ -69,8 +69,10 @@ function abend() {
 }
 
 function homeport_configuration() {
-    homeport_shell=$(docker images | awk -v user=$USER '
-        $1 == "homeport_shell" && $2 == user {print $1":"$2}
+    homeport_tag=$1
+    [ -z "$homeport_tag" ] && homeport_tag=default
+    homeport_shell=$(docker images | awk -v user=$USER -v tag=$homeport_tag '
+        $1 == "homeport_shell-"tag && $2 == user {print $1":"$2}
     ')
 
     [  -z "$homeport_shell" ] && abend 'no shell. please create shell with `homeport create`'

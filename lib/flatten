@@ -8,6 +8,26 @@ usage
 
 eval $(homeport_configuration)
 
+declare argv
+argv=$(getopt -o t: --long tag: -- "$@") || return
+eval "set -- $argv"
+
+homeport_tag=default
+
+while true; do
+    case "$1" in
+        --tag | -t)
+            shift
+            homeport_tag=$1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
 trap cleanup EXIT SIGTERM SIGINT
 
 function cleanup() {
@@ -21,7 +41,7 @@ dir=$(mktemp -d -t homeport_flatten)
 mkdir "$dir/src/" "$dir/export/" && \
     rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
 
-docker run --rm homeport_shell:$USER tar -C /var/lib/homeport -cf - . | \
+docker run --rm homeport_shell-$homeport_tag:$USER tar -C /var/lib/homeport -cf - . | \
     tar -C "$dir/export/" -xf -
 
 declare -a arguments
@@ -41,7 +61,8 @@ while read -r package; do
     fi
 done < "$dir/export/manifest"
 
-docker tag -f homeport_shell:$USER $homeport_docker_hub_account/homeport_shell:recovery
+echo $homeport_tag
+docker tag -f homeport_shell-$homeport_tag:$USER $homeport_docker_hub_account/homeport_shell-$homeport_tag:recovery
 { "$HOMEPORT_PATH/homeport" clear && "$HOMEPORT_PATH/homeport" append "${arguments[@]}"; } && \
-    docker rmi $homeport_docker_hub_account/homeport_shell:recovery || \
-    docker tag -f $homeport_docker_hub_account/homeport_shell:recovery homeport_shell:$USER
+    docker rmi $homeport_docker_hub_account/homeport_shell-$homeport_tag:recovery || \
+    docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag:recovery homeport_shell-$homeport_tag:$USER

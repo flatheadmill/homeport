@@ -6,8 +6,27 @@ homeport module <<-usage
     usage: homeport run
 usage
 
-eval $(homeport_configuration)
-echo here
+declare argv
+argv=$(getopt -o t: --long tag: -- "$@") || return
+eval "set -- $argv"
+
+homeport_tag=default
+
+while true; do
+    case "$1" in
+        --tag | -t)
+            shift
+            homeport_tag=$1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+eval $(homeport_configuration $homeport_tag)
 
 trap cleanup EXIT SIGTERM SIGINT
 
@@ -22,13 +41,12 @@ launch+='-u '$homeport_unix_user' '
 launch+='-v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent '
 launch+='-h homeport '
 launch+='--volumes-from homeport_home_alan '
-launch+='homeport_shell:'$USER' '
+launch+='homeport_shell-'$homeport_tag':'$USER' '
 
 if [ $# -eq 0 ]; then
     launch+='/home/'$homeport_unix_user'/.homeportrc'
 fi
 
-printf '%q' "$launch"
 if which boot2docker > /dev/null; then
     boot2docker ssh -At sh -c $(printf '%q' "$launch")
     # "'""$launch""'"

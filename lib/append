@@ -3,17 +3,35 @@
 set -e
 
 homeport module <<-usage
-    usage: homeport create --user [version] --account [Docker Hub account]
+    usage: homeport append
 
-    description:
+    options:
 
-        Creates a configuration that stores the user name in a data container
-        for use with all Homeport Create a configuration file in a volume named
-        "/etc/data container named "homeport_configuration" for use with
-        homeport.
+        -t, --tag <string>
+            an optional tag for the image so you can create different images
 usage
 
-eval $(homeport_configuration)
+declare argv
+argv=$(getopt -o t: --long tag: -- "$@") || return
+eval "set -- $argv"
+
+homeport_tag=default
+
+while true; do
+    case "$1" in
+        --tag | -t)
+            shift
+            homeport_tag=$1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+eval $(homeport_configuration $homeport_tag)
 
 trap cleanup EXIT SIGTERM SIGINT
 
@@ -42,7 +60,7 @@ while [ $# -ne 0 ]; do
 done
 
 cat <<EOF > "$dir/Dockerfile"
-FROM $homeport_docker_hub_account/homeport_shell:latest
+FROM $homeport_docker_hub_account/homeport_shell-$homeport_tag:latest
 
 MAINTAINER Alan Gutierrez, alan@prettyrobots.com
 
@@ -50,10 +68,10 @@ COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/install
 EOF
 
-docker build -t $homeport_docker_hub_account/homeport_shell:intermediate "$dir"
+docker build -t $homeport_docker_hub_account/homeport_shell-$homeport_tag:intermediate "$dir"
 
-docker tag -f $homeport_docker_hub_account/homeport_shell:intermediate \
-    $homeport_docker_hub_account/homeport_shell:latest
+docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag:intermediate \
+    $homeport_docker_hub_account/homeport_shell-$homeport_tag:latest
 
-docker tag -f $homeport_docker_hub_account/homeport_shell homeport_shell:$USER
-docker rmi $homeport_docker_hub_account/homeport_shell:intermediate
+docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag homeport_shell-$homeport_tag:$USER
+docker rmi $homeport_docker_hub_account/homeport_shell-$homeport_tag:intermediate
