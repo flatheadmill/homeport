@@ -1,0 +1,3 @@
+#!/bin/bash
+
+chsh $1 -s $2
