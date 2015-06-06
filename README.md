@@ -8,8 +8,8 @@ different Homeport images and run a shell. From your shell you can edit your
 home directory.
 
 Currently, I'm able to build different images with different build tools, I'm
-able to tag these images so I can visit my home directory armed for Node.js with
-one image, or armed for Ruby with aother.
+able to tag these images so I can visit my home directory armed with Node.js
+with one image, or armed with Ruby with aother.
 
 It's nifty way to do dependency management.
 
