@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+pushd ${0%/*} > /dev/null
+context=$(pwd -P)
+popd > /dev/null
+parent=${context%/*}
+
+docker build -t bigeasy/homeport_okay_compile -f "$context/Dockerfile" "$parent"
+
+if [[ $OSTYPE = darwin* ]]; then
+    docker=$(boot2docker ssh which docker)
+else
+    dokcer=$(which docker)
+fi
+
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $docker:$docker bigeasy/homeport_okay_compile /app/compile
+
+docker rmi bigeasy/homeport_okay_compile

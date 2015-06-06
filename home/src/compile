@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+cd /app
+
+gcc -static -o okay okay.c
+
+docker build -t bigeasy/homeport_home .
