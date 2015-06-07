@@ -6,28 +6,6 @@ homeport module <<-usage
     usage: homeport run
 usage
 
-declare argv
-argv=$(getopt -o t: --long tag: -- "$@") || return
-eval "set -- $argv"
-
-homeport_tag=default
-
-while true; do
-    case "$1" in
-        --tag | -t)
-            shift
-            homeport_tag=$1
-            shift
-            ;;
-        --)
-            shift
-            break
-            ;;
-    esac
-done
-
-eval $(homeport_configuration $homeport_tag)
-
 trap cleanup EXIT SIGTERM SIGINT
 
 function cleanup() {
@@ -38,10 +16,11 @@ function cleanup() {
 launch='docker run '
 launch+='--rm -it '
 launch+='-u '$homeport_unix_user' '
-launch+='-v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent '
+launch+='--volumes-from '$homeport_home_volume' '
+launch+='-v $(readlink -f $SSH_AUTH_SOCK):/home/'$homeport_unix_user/.ssh-agent' '
+launch+='-e SSH_AUTH_SOCK=/home/'$homeport_unix_user'/.ssh-agent '
 launch+='-h homeport '
-launch+='--volumes-from homeport_home_alan '
-launch+='homeport_shell-'$homeport_tag':'$USER' '
+launch+=$homeport_image_name' '
 
 if [ $# -eq 0 ]; then
     launch+='/home/'$homeport_unix_user'/.homeportrc'

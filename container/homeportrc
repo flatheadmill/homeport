@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+source /etc/homeport/configuration
+
+cat <<EOF > /home/$homeport_unix_user/.homeportrc
+#!/bin/bash
+sudo chown $homeport_unix_user:$homeport_unix_user /home/$homeport_unix_user/.ssh-agent
+cd /home/$homeport_unix_user
+exec bash -l
+EOF
+
+chown -R $homeport_unix_user:$homeport_unix_user /home/$homeport_unix_user
+
+chmod 755 /home/$homeport_unix_user/.homeportrc

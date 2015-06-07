@@ -15,13 +15,3 @@ source /etc/homeport/configuration
 echo "$homeport_unix_user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 mkdir -p /home/$homeport_unix_user
-
-cat <<EOF > /home/$homeport_unix_user/.homeportrc
-#!/bin/bash
-
-cd /home/$homeport_unix_user
-exec bash -l
-EOF
-
-chown -R $homeport_unix_user:$homeport_unix_user /home/$homeport_unix_user
-chmod 755 /home/$homeport_unix_user/.homeportrc

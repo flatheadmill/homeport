@@ -4,40 +4,8 @@ set -e
 
 homeport module <<-usage
     usage: homeport clear <options>
-
-    description:
-
-        Creates a configuration that stores the user name in a data container
-        for use with all Homeport Create a configuration file in a volume named
-        "/etc/data container named "homeport_configuration" for use with
-        homeport.
 usage
 
-declare argv
-argv=$(getopt -o t: --long tag: -- "$@") || return
-eval "set -- $argv"
-
-homeport_tag=default
-
-while true; do
-    case "$1" in
-        --tag | -t)
-            shift
-            homeport_tag=$1
-            shift
-            ;;
-        --)
-            shift
-            break
-            ;;
-    esac
-done
-
-eval $(homeport_configuration $homeport_tag)
-
-docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag:latest \
-    $homeport_docker_hub_account/homeport_shell-$homeport_tag:outgoing
-docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag:foundation \
-    $homeport_docker_hub_account/homeport_shell-$homeport_tag:latest
-docker tag -f $homeport_docker_hub_account/homeport_shell-$homeport_tag homeport_shell-$homeport_tag:$USER
-docker rmi $homeport_docker_hub_account/homeport_shell-$homeport_tag:outgoing
+docker tag -f $homeport_image_name:latest $homeport_image_name:outgoing
+docker tag -f $homeport_image_name:foundation $homeport_image_name:latest
+docker rmi $homeport_image_name:outgoing

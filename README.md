@@ -49,14 +49,19 @@ $ homeport append vim rsync zsh
 $ homeport append git
 ```
 
+The `homeport create` command will create a default homeport Ubuntu image that
+has a user account that has the same name as the user account used to create
+image on the host machine.
+
 The packages will be installed using `apt-get`. New images will be created.
 
 ```console
+$ whoami
+alan
 $ docker images | grep '\(REPOSITORY\|homeport\)'
-REPOSITORY                       TAG          IMAGE ID       CREATED       VIRTUAL SIZE
-bigeasy/homeport_shell-default   latest       4268a86a11d5   9 hours ago   459.8 MB
-homeport_shell-default           alan         4268a86a11d5   9 hours ago   459.8 MB
-bigeasy/homeport_shell-default   foundation   8d6e8de11c1c   9 hours ago   248.3 MB
+REPOSITORY                    TAG          IMAGE ID       CREATED       VIRTUAL SIZE
+homeport_alan_alan_default    latest       4268a86a11d5   9 hours ago   459.8 MB
+homeport_alan_alan_default    foundation   8d6e8de11c1c   9 hours ago   248.3 MB
 ```
 
 In the above list, you can see that homeport has created a two images (I'm

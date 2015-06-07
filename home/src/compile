@@ -6,4 +6,4 @@ cd /app
 
 gcc -static -o okay okay.c
 
-docker build -t bigeasy/homeport_home .
+docker build -t bigeasy/blank .

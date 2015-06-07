@@ -7,13 +7,24 @@ homeport module <<-usage
 usage
 
 declare argv
-argv=$(getopt -o t: --long tag: -- "$@") || return
+argv=$(getopt -o t:u:h: --long tag:,user:,hub: -- "$@") || return
 eval "set -- $argv"
 
 homeport_tag=default
+homeport_unix_user=$USER
 
 while true; do
     case "$1" in
+        --user | -u)
+            shift
+            homeport_unix_user=$1
+            shift
+            ;;
+        --hub | -h)
+            shift
+            homeport_docker_hub_account=$1
+            shift
+            ;;
         --tag | -t)
             shift
             homeport_tag=$1
@@ -26,10 +37,10 @@ while true; do
     esac
 done
 
-eval $(homeport_configuration $homeport_tag)
-
-homeport_home=$(docker ps --no-trunc -a | awk -v user=$USER '$(NF) == "homeport_home_"user { print $(NF) }')
+homeport_home=$(docker ps --no-trunc -a | awk -v host=$USER -v container=$homeport_unix_user '$(NF) == "homeport_home_"host"_"container { print $(NF) }')
 
 if [ -z "$homeport_home" ]; then
-    docker run --name "homeport_home_"$USER -v /home/$homeport_unix_user ubuntu /bin/true
+    homeport_home="homeport_home_${USER}_${homeport_unix_user}"
+    docker run --name "homeport_home_${USER}_${homeport_unix_user}" -v /home/$homeport_unix_user bigeasy/blank
+    docker run --rm --volumes-from "$homeport_home" "$homeport_image_name" /usr/share/homeport/container/homeportrc
 fi
