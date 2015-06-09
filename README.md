@@ -80,3 +80,43 @@ $ homeport run
 ```
 
 You should drop into `bash`. (Broken, you have to fuss.)
+
+## Adding Packages
+
+Packages are added with `homeport append` as described in **Creating an Image**.
+Packages are installed using `apt-get`.
+
+## Formulas: Alternative Package Managers and Custom Builds
+
+Often times you need to install packages using an alternative package manager
+such as `npm`, `gem`, or `pip`. To install using an alternative package manager
+you create a formula.
+
+To install using Python's `pip`, you first create a formula in a file named `pip`.
+
+```
+#!/bin/bash
+
+pip install "$@"
+```
+
+You can now invoke the formula from `homeport append`. To distinguish the
+formula from a package you **must** specify a path to the formula that includes
+a slash (`/`).
+
+```
+$ homeport append ./pip:awscli
+```
+
+Now instead of telling `apt-get` to install a module, `homeport append` will
+copy your `./pip` formula into the image, then run it with a single argument of
+`awscli`.
+
+You can specify multiple arguments to the formula by delimiting them with comma.
+
+```
+$ homeport append ./pip:boto,pygments
+```
+
+Note that there is no way to pass a comma into a formula. If you need to pass in
+complicate arguments, you should simply write a one off formula instead.
