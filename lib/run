@@ -13,24 +13,54 @@ function cleanup() {
     [ -n "$pids" ] && kill $pids
 }
 
-launch='docker run '
-launch+='--rm -it '
-launch+='-u '$homeport_unix_user' '
-launch+='--volumes-from '$homeport_home_volume' '
-launch+='-v $(readlink -f $SSH_AUTH_SOCK):/home/'$homeport_unix_user/.ssh-agent' '
-launch+='-e SSH_AUTH_SOCK=/home/'$homeport_unix_user'/.ssh-agent '
-launch+='-h homeport '
-launch+=$homeport_image_name' '
+boot2docker='-t'
+
+docker='docker run '
+docker+='--rm -it '
+docker+='-u '$homeport_unix_user' '
+docker+='--volumes-from '$homeport_home_volume' '
+
+declare argv
+argv=$(getopt --options +v:p:A --long volumes-from:link: -- "$@") || exit 1
+eval "set -- $argv"
+
+homeport_tag=default
+homeport_unix_user=$USER
+
+while true; do
+    case "$1" in
+        -v | -p | --volumes-from | --link)
+            docker+="$1"' '"$2"' '
+            shift
+            shift
+            ;;
+        -A)
+            boot2docker+='A'
+            docker+='-v $(readlink -f $SSH_AUTH_SOCK):/home/'$homeport_unix_user/.ssh-agent' '
+            docker+='-e SSH_AUTH_SOCK=/home/'$homeport_unix_user'/.ssh-agent '
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+docker+='-h homeport '
+docker+=$homeport_image_name
 
 if [ $# -eq 0 ]; then
-    launch+='/home/'$homeport_unix_user'/.homeportrc'
+    docker+=' /home/'$homeport_unix_user'/.homeportrc'
 else
-    launch+=$1
-    shift
+    while [ $# -ne 0 ]; do
+        docker+=' '$(printf '%q' "$1")
+        shift
+    done
 fi
 
 if which boot2docker > /dev/null; then
-    boot2docker ssh -At sh -c $(printf '%q' "$launch") "$@"
+    boot2docker ssh "$boot2docker" sh -c $(printf '%q' "$docker")
 else
     $launch
 fi

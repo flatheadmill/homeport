@@ -97,7 +97,7 @@ function homeport_exec() {
     export HOMEPORT_PATH homeport_docker_hub_account homeport_unix_user homeport_tag homeport_image_name homeport_unix_user homeport_home_volume
     export -f usage abend getopt homeport homeport_configuration
 
-    "$action" $@
+    "$action" "$@"
 }
 
 homeport_file=$0
@@ -118,8 +118,11 @@ popd > /dev/null
 
 source "$HOMEPORT_PATH/getopt.bash"
 
+# Node that the `+` in the options sets scanning mode to stop at the first
+# non-option parameter, otherwise we'd have to explicilty use `--` before the
+# sub-command.
 declare argv
-argv=$(getopt -o t:u:h: --long tag:,user:,hub: -- "$@") || return
+argv=$(getopt --options +t:u:h: --long tag:,user:,hub: -- "$@") || return
 eval "set -- $argv"
 
 homeport_tag=default
@@ -156,4 +159,4 @@ homeport_image_name+=homeport_${USER}_${homeport_unix_user}_${homeport_tag}
 
 homeport_home_volume="homeport_home_${USER}_${homeport_unix_user}"
 
-homeport_exec $@
+homeport_exec "$@"
