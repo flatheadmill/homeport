@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+mkdir /tmp/btsync
+cd /tmp/btsync
+curl -LO https://download-cdn.getsyncapp.com/stable/linux-x64/BitTorrent-Sync_x64.tar.gz
+tar zxvf BitTorrent-Sync_x64.tar.gz
+mv ./btsync /usr/local/bin
+rm -rf /tmp/btsync
