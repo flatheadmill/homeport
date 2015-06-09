@@ -21,7 +21,7 @@ docker+='-u '$homeport_unix_user' '
 docker+='--volumes-from '$homeport_home_volume' '
 
 declare argv
-argv=$(getopt --options +v:p:A --long volumes-from:link: -- "$@") || exit 1
+argv=$(getopt --options +v:p:A --long volumes-from:,link:,name:,rm -- "$@") || exit 1
 eval "set -- $argv"
 
 homeport_tag=default
@@ -29,7 +29,11 @@ homeport_unix_user=$USER
 
 while true; do
     case "$1" in
-        -v | -p | --volumes-from | --link)
+        --rm)
+            docker+="$1"' '
+            shift
+            ;;
+        -v | -p | --volumes-from | --link | --name)
             docker+="$1"' '"$2"' '
             shift
             shift
