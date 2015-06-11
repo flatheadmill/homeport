@@ -44,8 +44,8 @@ while true; do
             ;;
         -A)
             ssh_options+="$1"' '
-            docker+='-v $(readlink -f $SSH_AUTH_SOCK):/home/'$homeport_unix_user/.ssh-agent' '
-            docker+='-e SSH_AUTH_SOCK=/home/'$homeport_unix_user'/.ssh-agent '
+            docker_options+='-v $(readlink -f $SSH_AUTH_SOCK):/home/'$homeport_unix_user/.ssh-agent' '
+            docker_options+='-e SSH_AUTH_SOCK=/home/'$homeport_unix_user'/.ssh-agent '
             shift
             ;;
         --)
@@ -63,9 +63,10 @@ if [ "$named" -ne 1 -a "$daemonize" -ne 1 ]; then
     docker+='--rm '
 fi
 if [ "$daemonize" -ne 1 ]; then
-    docker+='-it'
+    docker+='-it '
     ssh_options+='-t '
 fi
+docker+=$docker_options
 docker+=$homeport_image_name
 
 if [ $# -eq 0 ]; then
