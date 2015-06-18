@@ -6,48 +6,4 @@ homeport module <<-usage
     usage: homeport flatten
 usage
 
-trap cleanup EXIT SIGTERM SIGINT
-
-function cleanup() {
-    local pids=$(jobs -pr)
-    [ -n "$pids" ] && kill $pids
-    [ ! -z "$dir" ] && rm -rf "$dir"
-}
-
-dir=$(mktemp -d -t homeport_flatten)
-
-mkdir "$dir/src/" "$dir/export/" && \
-    rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
-
-docker run --rm $homeport_image_name:latest tar -C /var/lib/homeport -cf - . | \
-    tar -C "$dir/export/" -xf -
-
-declare -a arguments
-
-function listing() {
-    while [ $# -ne 0 ]; do
-        echo $1
-        shift
-    done
-}
-
-while read -r package; do
-    if [[ $package = */* ]]; then
-        formula=${package%:*}
-        list=${package#*:}
-        argument="$dir/export/$formula"
-        if [ ! -z "$list" ]; then
-            argument+=":$list"
-        fi
-        echo "PACKAGE ARGUMENT $package $argument"
-        arguments+=($argument)
-    else
-        arguments+=($package)
-    fi
-done < "$dir/export/manifest"
-
-docker tag -f $homeport_image_name:latest $homeport_image_name:recovery
-{ "$HOMEPORT_PATH/lib/clear" && \
-    "$HOMEPORT_PATH/lib/append" "${arguments[@]}"; } && \
-    docker rmi $homeport_image_name:recovery || \
-    docker tag -f $homeport_image_name:recovery $homeport_image_name:latest
+"$HOMEPORT_PATH/lib/export" --archive - | "$HOMEPORT_PATH/lib/import" --archive -
