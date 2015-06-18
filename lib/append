@@ -19,7 +19,7 @@ function cleanup() {
     [ ! -z "$dir" ] && rm -rf "$dir"
 }
 
-dir=$(mktemp -d -t homeport_append)
+dir=$(mktemp -d -t homeport_append.XXXXXXX)
 
 mkdir "$dir/src/" && \
     rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"

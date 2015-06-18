@@ -13,7 +13,7 @@ homeport module <<-usage
         homeport.
 usage
 
-dir=$(mktemp -d -t homeport_nginx)
+dir=$(mktemp -d -t homeport_create.XXXXXXX)
 
 trap cleanup EXIT SIGTERM SIGINT
 
