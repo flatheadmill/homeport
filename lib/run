@@ -17,7 +17,7 @@ ssh_options=''
 docker_options=''
 
 declare argv
-argv=$(getopt --options +v:p:Ad --long volumes-from:,link:,name: -- "$@") || exit 1
+argv=$(getopt --options +v:p:Ad --long docker,volumes-from:,link:,name: -- "$@") || exit 1
 eval "set -- $argv"
 
 homeport_tag=default
@@ -27,6 +27,16 @@ docker_rm=1 named=0 daemonize=0
 
 while true; do
     case "$1" in
+        --docker)
+            if which boot2docker > /dev/null; then
+                host_docker="/usr/local/bin/docker"
+            else
+                host_docker=$(which docker)
+            fi
+            docker_options+="-v $host_docker:$host_docker:ro "
+            docker_options+='-v /var/run/docker.sock:/var/run/docker.sock:rw '
+            shift
+            ;;
         -d)
             daemonize=1
             docker_options+="$1"' '
