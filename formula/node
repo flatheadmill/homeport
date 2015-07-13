@@ -2,15 +2,39 @@
 
 set -e
 
+version=$1
+
 apt-get install -y curl python make g++
 
 mkdir /tmp/src
 cd /tmp/src
-curl -LO http://nodejs.org/dist/v0.12.3/node-v0.12.3.tar.gz
-[ $(sha256sum node-v0.12.3.tar.gz | cut -f1 -d' ') = \
-    'e65d83c6f2c874e28f65c5e192ac0acd2bbb52bfcf9d77e33442d6765a3eb9da' ]
-tar zxvf node-v0.12.3.tar.gz
+curl -LO http://nodejs.org/dist/v$version/node-v$version.tar.gz
+
+checksumed=0
+while read -r line; do
+    if [[ $line = $version' '* ]]; then
+        if [ $(sha256sum node-v$version.tar.gz | cut -f1 -d' ') = ${line#* } ]; then
+            checksumed=1
+        else
+            echo "bad sha256sum for v$version" 1>&2
+            exit 1
+        fi
+    fi
+done < $0
+
+if [ $checksumed -ne 1 ]; then
+    echo "no checksum found for v$version" 1>&2
+    exit 1
+fi
+
+tar zxvf node-v$version.tar.gz
 cd /tmp/src/node-*
+pwd
 ./configure --prefix=/usr/local
 make install
 rm -rf /tmp/src
+
+exit
+
+0.12.3 e65d83c6f2c874e28f65c5e192ac0acd2bbb52bfcf9d77e33442d6765a3eb9da
+0.12.7 b23d64df051c9c969b0c583f802d5d71de342e53067127a5061415be7e12f39d
