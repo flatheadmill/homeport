@@ -119,4 +119,4 @@ $ homeport append ./pip:boto,pygments
 ```
 
 Note that there is no way to pass a comma into a formula. If you need to pass in
-complicate arguments, you should simply write a one off formula instead.
+complicated arguments, you should simply write a one off formula instead.
