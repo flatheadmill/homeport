@@ -42,6 +42,7 @@ MAINTAINER Alan Gutierrez, alan@prettyrobots.com
 
 COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/foundation
+EXPOSE 22
 EOF
 
 docker build -t $homeport_image_name:foundation "$dir"

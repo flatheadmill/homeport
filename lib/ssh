@@ -3,22 +3,36 @@
 set -e
 
 homeport module <<-usage
-    usage: homeport run
+    usage: homeport append
+
+    options:
+
+        -t, --tag <string>
+            an optional tag for the image so you can create different images
 usage
 
 trap cleanup EXIT SIGTERM SIGINT
 
+dir=$(mktemp -d -t homeport_ssh.XXXXXXX)
+
 function cleanup() {
     local pids=$(jobs -pr)
     [ -n "$pids" ] && kill $pids
+    [ ! -z "$dir" ] && rm -rf "$dir"
 }
-
-ssh_options=''
-docker_options=''
 
 declare argv
 argv=$(getopt --options +v:p:Ad --long docker,volumes-from:,link:,name: -- "$@") || exit 1
 eval "set -- $argv"
+
+ssh_port=$(docker port $homeport_image_name 22 | cut -d: -f2)
+if [ -z "$DOCKER_HOST" ]; then
+    ssh_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_image_name")
+else
+    ssh_host=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
+fi
+ssh -l $homeport_unix_user -p "$ssh_port" "$ssh_host"
+exit
 
 homeport_tag=default
 homeport_unix_user=$USER
@@ -28,11 +42,6 @@ docker_rm=1 named=0 daemonize=0
 while true; do
     case "$1" in
         --docker)
-            if which boot2docker > /dev/null; then
-                host_docker="/usr/local/bin/docker"
-            else
-                host_docker=$(which docker)
-            fi
             docker_options+="-v $host_docker:$host_docker:ro "
             docker_options+='-v /var/run/docker.sock:/var/run/docker.sock:rw '
             docker_options+="-e HOMEPORT_DOCKER_IMAGE_NAME=$homeport_image_name "
@@ -65,32 +74,3 @@ while true; do
             ;;
     esac
 done
-
-docker='docker run '
-docker+='-u '$homeport_unix_user' '
-docker+='--volumes-from '$homeport_home_volume' '
-docker+='-h homeport '
-if [ "$named" -ne 1 -a "$daemonize" -ne 1 ]; then
-    docker+='--rm '
-fi
-if [ "$daemonize" -ne 1 ]; then
-    docker+='-it '
-    ssh_options+='-t '
-fi
-docker+=$docker_options
-docker+=$homeport_image_name
-
-if [ $# -eq 0 ]; then
-    docker+=' /home/'$homeport_unix_user'/.homeportrc'
-else
-    while [ $# -ne 0 ]; do
-        docker+=' '$(printf '%q' "$1")
-        shift
-    done
-fi
-
-if which boot2docker > /dev/null; then
-   echo boot2docker ssh $ssh_options sh -c $(printf '%q' "$docker")
-else
-   echo $docker
-fi

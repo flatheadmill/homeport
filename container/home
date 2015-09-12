@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+user=$1 key=$2
+mkdir -p "/home/$user/.ssh"
+echo "$key" >> /home/$user/.ssh/authorized_keys
+chown -R 701:701 /home/"$user"

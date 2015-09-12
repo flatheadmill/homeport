@@ -2,7 +2,7 @@
 
 set -e
 
-apt-get update && apt-get -y upgrade && apt-get -y autoremove
+apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server
 
 mkdir /etc/homeport
 mv /usr/share/homeport/configuration /etc/homeport/
@@ -15,3 +15,6 @@ source /etc/homeport/configuration
 echo "$homeport_unix_user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 mkdir -p /home/$homeport_unix_user
+mkdir -p /var/run/sshd
+
+sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
