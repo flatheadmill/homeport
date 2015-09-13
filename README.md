@@ -72,19 +72,33 @@ type `homeport run`.
 
 ## Running Your Image
 
-For now, you need to first create a home direcotry.
+For now, you need to first create a home direcotry. This will create a home
+directory with your public SSH key obtained from `ssh-agent`.
 
 ```
 $ homeport home
-$ homeport run
 ```
 
-You should drop into `bash`. (Broken, you have to fuss.)
+Now you can start the homeport SSH server and connect to it via ssh.
+
+```
+$ homeport listen
+$ homeport ssh
+```
+
+You should drop into `bash`.
 
 ## Adding Packages
 
 Packages are added with `homeport append` as described in **Creating an Image**.
 Packages are installed using `apt-get`.
+
+After you add new packages you're going to need to restart your SSH server.
+
+```
+$ homeport append ruby
+$ homeport relisten
+```
 
 ## Formulas: Alternative Package Managers and Custom Builds
 
