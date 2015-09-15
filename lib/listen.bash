@@ -72,5 +72,4 @@ docker+=$homeport_image_name' '
 docker+='/usr/share/homeport/container/sshd '
 docker+=$(printf %q $exclude)
 
-echo $docker
 $docker
