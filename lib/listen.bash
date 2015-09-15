@@ -56,15 +56,21 @@ while true; do
     esac
 done
 
+exclude=
+while read -r line; do
+    exclude+="${line%%=*}="
+done < <(docker run --volumes-from homeport_home_alan_alan --rm homeport_alan_alan_firewalk bash -c 'printenv')
+
 docker='docker run '
 docker+='-P -d '
 docker+='--name '$homeport_image_name' '
 docker+='--volumes-from '$homeport_home_volume' '
 docker+='-h homeport '
 docker+=$docker_options
-docker+=$homeport_image_name
+docker+=$homeport_image_name' '
 
-docker+=' /usr/sbin/sshd -D'
+docker+='/usr/share/homeport/container/sshd '
+docker+=$(printf %q $exclude)
 
 echo $docker
 $docker
