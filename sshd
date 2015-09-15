@@ -1,0 +1,18 @@
+#!/bin/bash
+
+declare -A exclude
+IFS='=' read -ra excludes <<< "$1"
+for i in "${excludes[@]}"; do
+    exclude[$i]=1
+done
+
+while read -r line; do
+    name=${line%%=*}
+    if [ "${exclude[$name]}" != "1" ]; then
+        echo $line
+    fi
+done < <(printenv | sort) >> /etc/environment
+
+cat /etc/environment
+
+/usr/sbin/sshd -D
