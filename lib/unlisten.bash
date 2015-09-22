@@ -21,5 +21,5 @@ function cleanup() {
 
 dir=$(mktemp -d -t homeport_unlisten.XXXXXXX)
 
-docker kill "$homeport_image_name"
+docker kill "$homeport_image_name" || echo "Unable to kill $homeport_image_name" 1>&2
 docker rm "$homeport_image_name"
