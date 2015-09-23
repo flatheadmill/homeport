@@ -58,5 +58,5 @@ homeport_home=$(docker ps --no-trunc -a | awk -v host=$USER -v container=$homepo
 if [ -z "$homeport_home" ]; then
     homeport_home="homeport_home_${USER}_${homeport_unix_user}"
     docker run --name "homeport_home_${USER}_${homeport_unix_user}" -v "/home/$homeport_unix_user" bigeasy/blank
-    docker run --rm --volumes-from homeport_home_alan_alan -v "$HOMEPORT_PATH"/container/home:/usr/local/bin/home:ro -it ubuntu /usr/local/bin/home "$homeport_unix_user" "$ssh_key"
+    docker run --rm --volumes-from $homeport_home_volume -v "$HOMEPORT_PATH"/container/home:/usr/local/bin/home:ro -it ubuntu /usr/local/bin/home "$homeport_unix_user" "$ssh_key"
 fi
