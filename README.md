@@ -82,7 +82,7 @@ $ homeport home
 Now you can start the homeport SSH server and connect to it via ssh.
 
 ```
-$ homeport listen
+$ homeport run
 $ homeport ssh
 ```
 
@@ -97,7 +97,7 @@ After you add new packages you're going to need to restart your SSH server.
 
 ```
 $ homeport append ruby
-$ homeport relisten
+$ homeport rm
 ```
 
 ## Formulas: Alternative Package Managers and Custom Builds

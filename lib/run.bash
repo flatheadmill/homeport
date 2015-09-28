@@ -17,7 +17,7 @@ ssh_options=''
 docker_options=''
 
 declare argv
-argv=$(getopt --options +v:p:Ad --long docker,volumes-from:,link:,name: -- "$@") || exit 1
+argv=$(getopt --options +v:p:A --long docker,volumes-from:,link: -- "$@") || exit 1
 eval "set -- $argv"
 
 homeport_tag=default
@@ -38,17 +38,7 @@ while true; do
             docker_options+="-e HOMEPORT_DOCKER_IMAGE_NAME=$homeport_image_name "
             shift
             ;;
-        -d)
-            daemonize=1
-            docker_options+="$1"' '
-            shift
-            ;;
-        -v | -p | --volumes-from | --link | --name)
-            case "$1" in
-                --name)
-                    named=1
-                    ;;
-            esac
+        -v | -p | --volumes-from | --link)
             docker_options+="$1"' '"$2"' '
             shift
             shift
@@ -66,31 +56,20 @@ while true; do
     esac
 done
 
+exclude=
+while read -r line; do
+    exclude+="${line%%=*}="
+done < <(docker run --volumes-from $homeport_home_volume --rm $homeport_image_name bash -c 'printenv')
+
 docker='docker run '
-docker+='-u '$homeport_unix_user' '
+docker+='-P -d '
+docker+='--name '$homeport_image_name' '
 docker+='--volumes-from '$homeport_home_volume' '
 docker+='-h homeport '
-if [ "$named" -ne 1 -a "$daemonize" -ne 1 ]; then
-    docker+='--rm '
-fi
-if [ "$daemonize" -ne 1 ]; then
-    docker+='-it '
-    ssh_options+='-t '
-fi
 docker+=$docker_options
-docker+=$homeport_image_name
+docker+=$homeport_image_name' '
 
-if [ $# -eq 0 ]; then
-    docker+=' /home/'$homeport_unix_user'/.homeportrc'
-else
-    while [ $# -ne 0 ]; do
-        docker+=' '$(printf '%q' "$1")
-        shift
-    done
-fi
+docker+='/usr/share/homeport/container/sshd '
+docker+=$(printf %q $exclude)
 
-if which boot2docker > /dev/null; then
-   echo boot2docker ssh $ssh_options sh -c $(printf '%q' "$docker")
-else
-   echo $docker
-fi
+$docker
