@@ -7,7 +7,7 @@ homeport module <<-usage
     options:
 
         -t, --tag <string>
-            an optional tag for the image so you can create different images
+            Homeport image tag to rsync to.
 usage
 
 arguments=('-av' '-e' 'ssh -p '$(docker port $homeport_image_name 22 | cut -d: -f2))
@@ -18,7 +18,6 @@ else
     ip=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
 fi
 
-arguments+=("$2")
 
 
 while [ $# -ne 0 ]; do
@@ -30,9 +29,10 @@ while [ $# -ne 0 ]; do
             shift
             ;;
         *)
+            arguments+=("$1")
             shift
             ;;
     esac
 done
 
-echo ${arguments[@]}
+rsync ${arguments[@]}
