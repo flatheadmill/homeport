@@ -18,6 +18,8 @@ else
     ip=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
 fi
 
+arguments+=("$2")
+
 
 while [ $# -ne 0 ]; do
     case "$1" in
