@@ -1,16 +1,24 @@
-rsync -av -e 'ssh -p 32768' ~/Sync/PrettyRobots/DetroitShapeFiles/ alan@192.168.99.100:~/DetroitShapeFiles/
+#!/bin/bash
 
-"$@"
+#rsync -av -e 'ssh -p 32768' ~/Sync/PrettyRobots/DetroitShapeFiles/ alan@192.168.99.100:~/DetroitShapeFiles/
+ 
+homeport module <<-usage
+    usage: homeport rsync 
+usage
 
-declare -a arguments
+arguments=('-e' 'ssh -p '$(docker port $homeport_image_name 22 | cut -d: -f2))
 
-arguments=('-e' 'ssh -p '${port})
+if [ -z "$DOCKER_HOST" ]; then
+    ip=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_image_name")
+else
+    ip=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
+fi
 
 while [ $# -ne 0 ]; do
     case "$1" in
         homeport:*)
             value=${1#homeport:}
-            value=${user}@${ip}:${value}
+            value=${homeport_unix_user}@${ip}:${value}
             arguments+=("$value")
             shift
             ;;
@@ -21,4 +29,4 @@ while [ $# -ne 0 ]; do
     esac
 done
 
-echo ${arguments}
+rsync ${arguments[@]}
