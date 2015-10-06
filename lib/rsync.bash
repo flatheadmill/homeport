@@ -29,4 +29,4 @@ while [ $# -ne 0 ]; do
     esac
 done
 
-rsync ${arguments[@]}
+rsync "${arguments[@]}"
