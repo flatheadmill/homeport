@@ -53,10 +53,9 @@ ssh_key=$(ssh-add -L | awk -v sought="$ssh_key_file" '
     sought ~ /\// ? $3 == sought : $3 == basename(sought)  { print }
 ' | head -n 1)
 
-homeport_home=$(docker ps --no-trunc -a | awk -v host=$USER -v container=$homeport_unix_user '$(NF) == "homeport_home_"host"_"container { print $(NF) }')
+exists=$(docker ps --no-trunc -a | awk -v volume=$homeport_home_volume '$(NF) == volume { print $(NF) }')
 
-if [ -z "$homeport_home" ]; then
-    homeport_home="homeport_home_${USER}_${homeport_unix_user}"
-    docker run --name "homeport_home_${USER}_${homeport_unix_user}" -v "/home/$homeport_unix_user" bigeasy/blank
+if [ -z "$exists" ]; then
+    docker run --name $homeport_home_volume -v "/home/$homeport_unix_user" bigeasy/blank
     docker run --rm --volumes-from $homeport_home_volume -v "$HOMEPORT_PATH"/container/home:/usr/local/bin/home:ro -it ubuntu /usr/local/bin/home "$homeport_unix_user" "$ssh_key"
 fi

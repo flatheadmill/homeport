@@ -2,7 +2,6 @@
 
 set -e
 
-
 case "$OSTYPE" in
     darwin* )
         HOMEPORT_OS=OSX
@@ -17,8 +16,8 @@ esac
 
 if [ "$1" == "module" ]; then
     echo $0
-  echo "Please do not execute these programs directly. Use homeport."
-  exit 1
+    echo "Please do not execute these programs directly. Use homeport."
+    exit 1
 fi
 
 # At the top of every module. This will gather a usage message to share with the
@@ -57,15 +56,15 @@ function homeport_absolutize() {
 }
 
 function usage() {
-  local code=$1
-  echo "$USAGE"
-  exit $code
+    local code=$1
+    echo "$USAGE"
+    exit $code
 }
 
 function abend() {
-  local message=$1
-  echo "error: $message"
-  usage 1
+    local message=$1
+    echo "error: $message"
+    usage 1
 }
 
 function homeport_configuration() {
@@ -125,11 +124,21 @@ declare argv
 argv=$(getopt --options +t:u:h: --long tag:,user:,hub: -- "$@") || return
 eval "set -- $argv"
 
+homeport_namespace=about
 homeport_tag=default
 homeport_unix_user=$USER
 
+if [ -e ~/.homeport.conf ]; then
+    source ~/.homeport.conf
+fi
+
 while true; do
     case "$1" in
+        --namespace | -n)
+            shift
+            homeport_namespace=$1
+            shift
+            ;;
         --user | -u)
             shift
             homeport_unix_user=$1
@@ -155,8 +164,8 @@ done
 if [ ! -z "$homeport_docker_hub_account" ]; then
     homeport_image_name="${homeport_docker_hub_account}/"
 fi
-homeport_image_name+=homeport_${USER}_${homeport_unix_user}_${homeport_tag}
+homeport_image_name+=homeport_${USER}_${homeport_unix_user}_${homeport_namespace}_${homeport_tag}
 
-homeport_home_volume="homeport_home_${USER}_${homeport_unix_user}"
+homeport_home_volume="homeport_${USER}_${homeport_unix_user}_home"
 
 homeport_exec "$@"
