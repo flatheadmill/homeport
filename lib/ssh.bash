@@ -37,4 +37,4 @@ fi
 
 echo "[$ssh_host]:$ssh_port $(cut -d' ' -f1,2 < $dir/ssh_host_rsa_key.pub)" > $dir/known_hosts
 
-ssh -o "UserKnownHostsFile=$dir/known_hosts" -A -l $homeport_unix_user -p "$ssh_port" "$ssh_host"
+ssh -o "UserKnownHostsFile=$dir/known_hosts" -A -l $homeport_unix_user -p "$ssh_port" "$ssh_host" "$@"
