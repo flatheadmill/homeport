@@ -39,7 +39,7 @@ while true; do
             shift
             ;;
         -v | -p | --volumes-from | --link)
-            docker_options+="$1"' '"$2"' '
+            docker_options+=$(printf %q "$1")' '$(printf %q "$2")' '
             shift
             shift
             ;;
@@ -72,4 +72,4 @@ docker+=$homeport_image_name' '
 docker+='/usr/share/homeport/container/sshd '
 docker+=$(printf %q $exclude)
 
-$docker
+eval $docker
