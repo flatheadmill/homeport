@@ -20,9 +20,6 @@ declare argv
 argv=$(getopt --options +v:p:A --long docker,volumes-from:,link: -- "$@") || exit 1
 eval "set -- $argv"
 
-homeport_tag=default
-homeport_unix_user=$USER
-
 docker_rm=1 named=0 daemonize=0
 
 while true; do
@@ -65,7 +62,7 @@ docker='docker run '
 docker+='-P -d '
 docker+='--name '$homeport_image_name' '
 docker+='--volumes-from '$homeport_home_volume' '
-docker+='-h homeport '
+docker+='-h '$homeport_tag' '
 docker+=$docker_options
 docker+=$homeport_image_name' '
 

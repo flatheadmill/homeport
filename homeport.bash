@@ -67,7 +67,7 @@ function abend() {
     usage 1
 }
 
-function homeport_configuration() {
+function __homeport_configuration() {
     homeport_tag=$1
     homeport_shell=$(docker images | awk -v user=$USER -v tag=$homeport_tag '
         $1 == "homeport_shell-"tag && $2 == user {print $1":"$2}
@@ -94,7 +94,7 @@ function homeport_exec() {
 
     export homeport_namespace="$homeport_docker_hub_account"
     export HOMEPORT_PATH homeport_docker_hub_account homeport_unix_user homeport_tag homeport_image_name homeport_unix_user homeport_home_volume
-    export -f usage abend getopt homeport homeport_configuration
+    export -f usage abend getopt homeport
 
     "$action" "$@"
 }
