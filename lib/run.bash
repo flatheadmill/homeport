@@ -17,7 +17,7 @@ ssh_options=''
 docker_options=''
 
 declare argv
-argv=$(getopt --options +v:p:A --long docker,volumes-from:,link: -- "$@") || exit 1
+argv=$(getopt --options +e:v:p:A --long docker,volumes-from:,link: -- "$@") || exit 1
 eval "set -- $argv"
 
 docker_rm=1 named=0 daemonize=0
@@ -35,7 +35,7 @@ while true; do
             docker_options+="-e HOMEPORT_DOCKER_IMAGE_NAME=$homeport_image_name "
             shift
             ;;
-        -v | -p | --volumes-from | --link)
+        -e | -v | -p | --volumes-from | --link)
             docker_options+=$(printf %q "$1")' '$(printf %q "$2")' '
             shift
             shift
