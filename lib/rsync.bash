@@ -16,6 +16,9 @@ function cleanup() {
 
 trap cleanup EXIT SIGTERM SIGINT
 
+if [[ "$dir" ==  *' '* ]]; then
+    abend "Cannot use a temp directory that contains spaces. TMPDIR=$TMPDIR"
+fi
 
 docker cp "$homeport_image_name":/etc/ssh/ssh_host_rsa_key.pub "$dir/ssh_host_rsa_key.pub"
 
@@ -28,7 +31,7 @@ ssh_port=$(docker port $homeport_image_name 22 | cut -d: -f2)
 
 echo "[$ssh_host]:$ssh_port $(cut -d' ' -f1,2 < $dir/ssh_host_rsa_key.pub)" > "$dir/known_hosts"
 
-arguments=("-e" "ssh -p $ssh_port -o UserKnownHostsFile=$(printf %q $dir)/known_hosts")
+arguments=("-e" "ssh -p $ssh_port -o UserKnownHostsFile=$dir/known_hosts")
 while [ $# -ne 0 ]; do
     case "$1" in
         homeport:*)
