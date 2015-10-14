@@ -121,7 +121,7 @@ source "$HOMEPORT_PATH/getopt.bash"
 # non-option parameter, otherwise we'd have to explicilty use `--` before the
 # sub-command.
 declare argv
-argv=$(getopt --options +t:u:h: --long tag:,user:,hub: -- "$@") || return
+argv=$(getopt --options +n:t:u:h: --long namespace:,tag:,user:,hub: -- "$@") || return
 eval "set -- $argv"
 
 homeport_namespace=about
