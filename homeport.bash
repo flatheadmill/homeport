@@ -92,9 +92,18 @@ function homeport_exec() {
 
     shift
 
+    # todo: you're never using this and you're always building, should this be the namespace?
+    if [ ! -z "$homeport_docker_hub_account" ]; then
+        homeport_image_name="${homeport_docker_hub_account}/"
+    else
+        homeport_image_name=
+    fi
+    homeport_image_name+=homeport_${USER}_${homeport_unix_user}_${homeport_namespace}_${homeport_tag}
+    homeport_home_volume="homeport_${USER}_${homeport_unix_user}_home"
+
     export homeport_namespace="$homeport_docker_hub_account"
     export HOMEPORT_PATH homeport_docker_hub_account homeport_unix_user homeport_tag homeport_image_name homeport_unix_user homeport_home_volume
-    export -f usage abend getopt homeport
+    export -f usage abend getopt homeport homeport_exec
 
     "$action" "$@"
 }
@@ -160,12 +169,5 @@ while true; do
             ;;
     esac
 done
-
-if [ ! -z "$homeport_docker_hub_account" ]; then
-    homeport_image_name="${homeport_docker_hub_account}/"
-fi
-homeport_image_name+=homeport_${USER}_${homeport_unix_user}_${homeport_namespace}_${homeport_tag}
-
-homeport_home_volume="homeport_${USER}_${homeport_unix_user}_home"
 
 homeport_exec "$@"
