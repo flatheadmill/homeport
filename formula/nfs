@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+apt-get install -y nfs-kernel-server
+
+source /etc/homeport/configuration
+
+sed -i.bak -e 's/^RPCMOUNTDOPTS=.*/RPCMOUNTDOPTS="--manage-gids -p 7003"/' /etc/default/nfs-kernel-server
+sed -i.bak -e 's/^STATDOPTS.*/STATDOPTS="--port 7002"/' /etc/default/nfs-common
+echo 'options lockd nlm_udpport=7001 nlm_tcpport=7001' > /etc/modprobe.d/options.conf
+
+cat <<EOF > /etc/exports
+/home/$homeport_unix_user *(rw,sync,no_subtree_check,insecure,all_squash,anonuid=701,anongid=701)
+EOF
