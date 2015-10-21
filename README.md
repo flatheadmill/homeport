@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/bigeasy/homeport.png?label=ready&title=Ready)](https://waffle.io/bigeasy/homeport)
 # Homeport
 
 Homeport is a Dockerized Linux development environment. It's basically a Linux
