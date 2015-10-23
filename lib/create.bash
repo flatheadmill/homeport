@@ -25,8 +25,10 @@ function cleanup() {
     rm -rf "$dir"
 }
 
-mkdir "$dir/src/" && (cd "$homeport_path" && tar cf - .) | \
+mkdir "$dir/src/" && homeport_source_tarball | \
     (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
+
+find "$dir"
 
 mkdir -p "$HOME/.homeport"
 

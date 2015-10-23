@@ -35,29 +35,6 @@ function abend() {
     usage 1
 }
 
-function homeport_emit_evaluated_variable() {
-    local name=$1
-    eval 'local value=$(echo $'$name')'
-    echo "$name=$(printf %q $value)"
-}
-
-function homeport_emit_evaluated() {
-    return 1
-    if [ "$homeport_evaluated" -eq 1 ]; then
-        homeport_emit_evaluated_variable homeport_unix_user
-        homeport_emit_evaluated_variable homeport_namespace
-        homeport_emit_evaluated_variable homeport_tag
-        homeport_emit_evaluated_variable homeport_evaluated
-        homeport_emit_evaluated_variable homeport_image_name
-        homeport_emit_evaluated_variable homeport_home_volume
-        while [ $# -ne 0 ]; do
-            echo 1
-        done
-        echo ''
-        cat "$homeport_command_path"
-    fi
-}
-
 function homeport_exec() {
     local command=$1
 
@@ -80,7 +57,7 @@ function homeport_exec() {
 
     export homeport_path homeport_docker_hub_account homeport_unix_user homeport_tag homeport_image_name homeport_unix_user homeport_home_volume homeport_evaluated
     export homeport_command_path="$action" homeport_namespace
-    export -f usage abend getopt homeport homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable
+    export -f usage abend getopt homeport homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable homeport_source_tarball
 
     "$action" "$@"
 }

@@ -50,6 +50,7 @@ homeport_path=$(pwd)
 popd > /dev/null
 
 source "$homeport_path/functions.bash"
+source "$homeport_path/hosted.bash"
 source "$homeport_path/getopt.bash"
 
 # Node that the `+` in the options sets scanning mode to stop at the first
