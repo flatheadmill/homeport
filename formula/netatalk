@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+apt-get install -y netatalk avahi-daemon avahi-utils dbus
+
+source /etc/homeport/configuration
+
+password=$(ps ax | md5sum | cut -f1 -d' ')
+
+sed -i.bak -e 's@/usr/bin/dbus-@/bin/dbus-@g' /etc/init.d/dbus
+sed -i.bak -e 's@/usr/bin/dbus-@/bin/dbus-@g' /etc/default/netatalk
+
+echo '- -tcp -noddp -uamlist uams_dhx.so,uams_dhx2.so -nosavepassword' >> /etc/netatalk/afpd.conf
+
+echo "$homeport_unix_user":"$password" | chpasswd
+
+mkdir -p /usr/local/bin
+
+cat <<EOF > /usr/local/bin/netatalk
+#!/bin/bash
+
+sudo /etc/init.d/dbus restart > /dev/null
+sudo /etc/init.d/avahi-daemon restart > /dev/null
+sudo /etc/init.d/netatalk restart > /dev/null
+
+echo "afp://$homeport_unix_user:$password@\$1"
+EOF
+
+chmod 755 /usr/local/bin/netatalk

@@ -6,6 +6,8 @@ homeport module <<-usage
     usage: homeport run
 usage
 
+homeport_emit_evaluated "$@" && exit
+
 trap cleanup EXIT SIGTERM SIGINT
 
 function cleanup() {

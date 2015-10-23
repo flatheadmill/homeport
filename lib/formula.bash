@@ -15,4 +15,4 @@ usage
 
 formula=$1
 
-echo "$HOMEPORT_PATH/formula/$formula"
+echo "$homeport_path/formula/$formula"

@@ -11,6 +11,8 @@ homeport module <<-usage
             an optional tag for the image so you can create different images
 usage
 
+homeport_emit_evaluated "$@" && exit
+
 trap cleanup EXIT SIGTERM SIGINT
 
 function cleanup() {

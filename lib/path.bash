@@ -11,4 +11,4 @@ homeport module <<-usage
         trying to locate the default Homeport formulas.
 usage
 
-echo $HOMEPORT_PATH
+echo $homeport_path

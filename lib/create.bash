@@ -13,6 +13,8 @@ homeport module <<-usage
         homeport.
 usage
 
+homeport_emit_evaluated "$@" && exit
+
 dir=$(mktemp -d -t homeport_create.XXXXXXX)
 
 trap cleanup EXIT SIGTERM SIGINT
@@ -23,8 +25,10 @@ function cleanup() {
     rm -rf "$dir"
 }
 
-mkdir "$dir/src/" && \
-    rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
+mkdir "$dir/src/" && homeport_source_tarball | \
+    (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
+
+find "$dir"
 
 mkdir -p "$HOME/.homeport"
 

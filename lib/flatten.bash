@@ -6,4 +6,4 @@ homeport module <<-usage
     usage: homeport flatten
 usage
 
-"$HOMEPORT_PATH/lib/export" --archive - | "$HOMEPORT_PATH/lib/import" --archive -
+"$homeport_path/lib/export" --archive - | "$homeport_path/lib/import" --archive -

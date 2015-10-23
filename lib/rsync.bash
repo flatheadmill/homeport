@@ -6,6 +6,8 @@ homeport module <<-usage
     usage: homeport rsync 
 usage
 
+homeport_emit_evaluated "$@" && exit
+
 dir=$(mktemp -d -t homeport_rsync.XXXXXXX)
 
 function cleanup() {
