@@ -13,7 +13,7 @@ homeport module <<-usage
         homeport.
 usage
 
-homeport_emit_evaluated && exit
+homeport_emit_evaluated "$@" && exit
 
 dir=$(mktemp -d -t homeport_create.XXXXXXX)
 

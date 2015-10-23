@@ -11,6 +11,8 @@ homeport module <<-usage
             an optional tag for the image so you can create different images
 usage
 
+homeport_emit_evaluated "$@" && exit
+
 trap cleanup EXIT SIGTERM SIGINT
 
 function cleanup() {
@@ -21,8 +23,8 @@ function cleanup() {
 
 dir=$(mktemp -d -t homeport_append.XXXXXXX)
 
-mkdir "$dir/src/" && \
-    rsync -a "$homeport_path/" "$dir/src/" || abend "cannot create source archive"
+mkdir "$dir/src/" && homeport_source_tarball | \
+    (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
 
 mkdir -p "$dir/src/packages/formula"
 while [ $# -ne 0 ]; do
@@ -42,6 +44,7 @@ while [ $# -ne 0 ]; do
     echo "$package" >> "$dir/src/packages/manifest"
 done
 
+# todo: copy to /var/lib instead
 cat <<EOF > "$dir/Dockerfile"
 FROM $homeport_image_name:latest
 
