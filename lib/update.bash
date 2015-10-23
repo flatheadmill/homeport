@@ -10,4 +10,4 @@ homeport module <<-usage
         Update Homeport by pulling from GitHub.
 usage
 
-(cd $HOMEPORT_PATH && git pull)
+(cd $homeport_path && git pull)

@@ -57,5 +57,5 @@ exists=$(docker ps --no-trunc -a | awk -v volume=$homeport_home_volume '$(NF) ==
 
 if [ -z "$exists" ]; then
     docker run --name $homeport_home_volume -v "/home/$homeport_unix_user" bigeasy/blank
-    docker run --rm --volumes-from $homeport_home_volume -v "$HOMEPORT_PATH"/container/home:/usr/local/bin/home:ro -it ubuntu /usr/local/bin/home "$homeport_unix_user" "$ssh_key"
+    docker run --rm --volumes-from $homeport_home_volume -v "$homeport_path"/container/home:/usr/local/bin/home:ro -it ubuntu /usr/local/bin/home "$homeport_unix_user" "$ssh_key"
 fi

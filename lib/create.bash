@@ -25,7 +25,7 @@ function cleanup() {
     rm -rf "$dir"
 }
 
-mkdir "$dir/src/" && (cd "$HOMEPORT_PATH" && tar cf - .) | \
+mkdir "$dir/src/" && (cd "$homeport_path" && tar cf - .) | \
     (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
 
 mkdir -p "$HOME/.homeport"

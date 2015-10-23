@@ -46,11 +46,11 @@ while [ -L "$homeport_file" ]; do
 done
 
 pushd "${homeport_file%/*}" > /dev/null
-HOMEPORT_PATH=$(pwd)
+homeport_path=$(pwd)
 popd > /dev/null
 
-source "$HOMEPORT_PATH/functions.bash"
-source "$HOMEPORT_PATH/getopt.bash"
+source "$homeport_path/functions.bash"
+source "$homeport_path/getopt.bash"
 
 # Node that the `+` in the options sets scanning mode to stop at the first
 # non-option parameter, otherwise we'd have to explicilty use `--` before the

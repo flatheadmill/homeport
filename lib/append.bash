@@ -22,7 +22,7 @@ function cleanup() {
 dir=$(mktemp -d -t homeport_append.XXXXXXX)
 
 mkdir "$dir/src/" && \
-    rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
+    rsync -a "$homeport_path/" "$dir/src/" || abend "cannot create source archive"
 
 mkdir -p "$dir/src/packages/formula"
 while [ $# -ne 0 ]; do
