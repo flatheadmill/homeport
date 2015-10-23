@@ -19,6 +19,8 @@ function homeport_emit_evaluated() {
         echo ''
         cat "$homeport_path/containerized.bash"
         echo ''
+        cat "$homeport_path/getopt.bash"
+        echo ''
         cat "$homeport_command_path"
     else
         return 1

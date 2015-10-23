@@ -6,6 +6,8 @@ homeport module <<-usage
     usage: homeport home
 usage
 
+homeport_emit_evaluated "$@" && exit
+
 declare argv
 argv=$(getopt -o t:u:h: --long tag:,user:,hub: -- "$@") || return
 eval "set -- $argv"
