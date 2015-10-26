@@ -9,11 +9,11 @@ usage
 homeport_emit_evaluated "$@" && exit
 
 homeport_guest_user=$1
-if [ -z "$user" ]; then
+if [ -z "$homeport_guest_user" ]; then
     homeport_guest_user=$USER
 fi
 
-homeport_home_volume="homeport_home-${homeport_guest_user}"
+homeport_home_volume="homeport-home-${homeport_guest_user}"
 
 if [ -z "$ssh_key_file" ]; then
     ssh_key_file=$(ssh-add -L | head -n 1 | awk 'NR = 1 { print $3 }')
