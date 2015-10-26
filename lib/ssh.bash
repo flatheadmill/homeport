@@ -27,12 +27,12 @@ declare argv
 argv=$(getopt --options +v:p:Ad --long docker,volumes-from:,link:,name: -- "$@") || exit 1
 eval "set -- $argv"
 
-docker cp "$homeport_image_name":/etc/ssh/ssh_host_rsa_key.pub "$dir/ssh_host_rsa_key.pub"
+docker cp "$homeport_container_name":/etc/ssh/ssh_host_rsa_key.pub "$dir/ssh_host_rsa_key.pub"
 
 
-ssh_port=$(docker port $homeport_image_name 22 | cut -d: -f2)
+ssh_port=$(docker port $homeport_container_name 22 | cut -d: -f2)
 if [ -z "$DOCKER_HOST" ]; then
-    ssh_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_image_name")
+    ssh_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_container_name")
 else
     ssh_host=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
 fi

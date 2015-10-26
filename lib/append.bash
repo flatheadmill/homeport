@@ -11,6 +11,8 @@ homeport module <<-usage
             an optional tag for the image so you can create different images
 usage
 
+echo $homeport_image_name
+
 homeport_emit_evaluated "$@" && exit
 
 trap cleanup EXIT SIGTERM SIGINT
@@ -54,6 +56,6 @@ COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/install
 EOF
 
-docker build -t $homeport_image_name:intermediate "$dir"
-docker tag -f $homeport_image_name:intermediate $homeport_image_name:latest
-docker rmi $homeport_image_name:intermediate
+docker build -t $homeport_image_name:_intermediate "$dir"
+docker tag -f $homeport_image_name:_intermediate $homeport_image_name:latest
+docker rmi $homeport_image_name:_intermediate

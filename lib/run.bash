@@ -66,7 +66,7 @@ done < <(docker run --volumes-from $homeport_home_volume --rm $homeport_image_na
 
 docker='docker run '
 docker+='-P -d '
-docker+='--name '$homeport_image_name' '
+docker+='--name '$homeport_container_name' '
 docker+='--volumes-from '$homeport_home_volume' '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options

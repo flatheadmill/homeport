@@ -53,15 +53,27 @@ source "$homeport_path/functions.bash"
 source "$homeport_path/hosted.bash"
 source "$homeport_path/getopt.bash"
 
+homeport_tag=$1
+shift
+
+if [[ "$homeport_tag" = *@* ]]; then
+    homeport_unix_user=${homeport_tag%@*}
+    homeport_tag=${homeport_tag#*@}
+else
+    homeport_unix_user=$USER
+fi
+
+echo $homeport_unix_user@$homeport_tag
+
+[ -z "$homeport_tag" ] && abend "Tag name required"
+
 # Node that the `+` in the options sets scanning mode to stop at the first
 # non-option parameter, otherwise we'd have to explicilty use `--` before the
 # sub-command.
 declare argv
-argv=$(getopt --options +n:t:u:h: --long evaluated,namespace:,tag:,user:,hub: -- "$@") || return
+argv=$(getopt --options +e --long evaluated -- "$@") || abend "cannot parse arguments"
 eval "set -- $argv"
 
-homeport_namespace=about
-homeport_tag=default
 homeport_unix_user=$USER
 homeport_evaluated=0
 
@@ -73,26 +85,6 @@ while true; do
     case "$1" in
         --evaluated | -e)
             homeport_evaluated=1
-            shift
-            ;;
-        --namespace | -n)
-            shift
-            homeport_namespace=$1
-            shift
-            ;;
-        --user | -u)
-            shift
-            homeport_unix_user=$1
-            shift
-            ;;
-        --hub | -h)
-            shift
-            homeport_docker_hub_account=$1
-            shift
-            ;;
-        --tag | -t)
-            shift
-            homeport_tag=$1
             shift
             ;;
         --)

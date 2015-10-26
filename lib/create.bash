@@ -28,8 +28,6 @@ function cleanup() {
 mkdir "$dir/src/" && homeport_source_tarball | \
     (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
 
-find "$dir"
-
 mkdir -p "$HOME/.homeport"
 
 echo $homeport_image_name
@@ -49,5 +47,5 @@ RUN /usr/share/homeport/container/foundation
 EXPOSE 22
 EOF
 
-docker build -t $homeport_image_name:foundation "$dir"
-docker tag -f $homeport_image_name:foundation  $homeport_image_name:latest
+docker build -t $homeport_image_name:_foundation "$dir"
+docker tag -f $homeport_image_name:_foundation  $homeport_image_name:latest
