@@ -135,3 +135,35 @@ $ homeport append ./pip:boto,pygments
 
 Note that there is no way to pass a comma into a formula. If you need to pass in
 complicated arguments, you should simply write a one off formula instead.
+
+## Hacking
+
+Notes to self, installing Vagrant to install Ubuntu.
+
+```
+$ brew tap phinze/homebrew-cask && brew install brew-cask
+$ brew cask install vagrant
+$ vagrant plugin install vagrant-vbox-snapshot
+$ vagrant box add trusty https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box
+$ mkdir ~/homeport && cd ~/homeport
+$ vagrant init trusty
+```
+
+You now need to add `config.ssh.forward_agent = true` to the `Vagrantfile`.
+
+```
+$ vagrant up
+$ vagrant ssh
+```
+
+Install Docker on Ubuntu.
+
+```
+$ sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+$ echo deb https://apt.dockerproject.org/repo ubuntu-trusty main | sudo tee /etc/apt/sources.list.d/docker.list
+$ sudo apt-get update
+$ sudo apt-get purge lxc-docker*
+$ sudo apt-get install docker
+$ sudo usermod -aG docker vagrant
+$ docker run hello-world
+```
