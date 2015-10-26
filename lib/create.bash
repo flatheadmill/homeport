@@ -14,6 +14,7 @@ homeport module <<-usage
 usage
 
 homeport_emit_evaluated "$@" && exit
+homeport_labels $1 && shift
 
 dir=$(mktemp -d -t homeport_create.XXXXXXX)
 

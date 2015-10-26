@@ -12,6 +12,7 @@ homeport module <<-usage
 usage
 
 homeport_emit_evaluated "$@" && exit
+homeport_labels $1 && shift
 
 trap cleanup EXIT SIGTERM SIGINT
 
@@ -23,5 +24,5 @@ function cleanup() {
 
 dir=$(mktemp -d -t homeport_unlisten.XXXXXXX)
 
-docker kill "$homeport_image_name" || echo "Unable to kill $homeport_image_name" 1>&2
-docker rm "$homeport_image_name"
+docker kill "$homeport_container_name" || echo "Unable to kill $homeport_container_name" 1>&2
+docker rm "$homeport_container_name"

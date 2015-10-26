@@ -11,9 +11,8 @@ homeport module <<-usage
             an optional tag for the image so you can create different images
 usage
 
-echo $homeport_image_name
-
 homeport_emit_evaluated "$@" && exit
+homeport_labels $1 && shift
 
 trap cleanup EXIT SIGTERM SIGINT
 
