@@ -3,6 +3,9 @@
 
 ## Decisions
 
+ * We don't version formulas in the image, because we don't version `apt-get`,
+ we can never garuntee that we're going to build the exact same image in the
+ exact same order.
  * Naming is `@image` and `home@` or `home@user`.
  * You're fighting a war inside your head against multi-tenancy, and
  multi-tenancy is losing. You're not going to have a user specifed UNIX user
@@ -66,3 +69,27 @@ addresses as `vagrant`, `ec2-user`, or `ubuntu`. but this is a losing battle and
 a pointless battle. I'm not going to be using email except through IMAP, so I'm
 not going to be `homeport@prettyrobots.com`. I'm not on a machine that has other
 users, so they're not going to send mail email, or `talk` to me.
+
+
+## Rebuilding
+
+We don't version formulas in the image, because we don't version `apt-get`, we
+can never garuntee that we're going to build the exact same image in the exact
+same order. If you change a formula significantly, rearrange it's arguments,
+then append it, we're going to run that command, but we're going to run it as a
+replacement for the first invocation. Thus, you're not supposed to run a command
+over and over again, say, changing a configuration with the formula, running
+some more formulas, then changing it back. When we flatten, we run every formula
+once, and with one set of arguments, thus a formula is supposed to make things a
+certain way.
+
+Thus, you wouldn't create a formula for `sed` and use it to fix files.
+
+```
+$ homeport append example formula/replace:/etc/passwd,mysql,sql
+$ homeport append example formula/replace:/etc/group,mysql,sql
+```
+
+A formula is supposed to alter the system in a certain way, it declares the way
+a particular aspect of the system shall be, and each invocation of the formula
+is supposed to perform its changes in their entirety.
