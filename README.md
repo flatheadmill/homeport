@@ -166,7 +166,7 @@ $ sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A91289
 $ echo deb https://apt.dockerproject.org/repo ubuntu-trusty main | sudo tee /etc/apt/sources.list.d/docker.list
 $ sudo apt-get update
 $ sudo apt-get purge lxc-docker*
-$ sudo apt-get install docker
+$ sudo apt-get install docker-engine
 $ sudo usermod -aG docker vagrant
 $ docker run hello-world
 ```
