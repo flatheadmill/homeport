@@ -44,9 +44,9 @@ function homeport_labels() {
     else
         homeport_unix_user=$USER
     fi
-    homeport_image_name="homeport/${homeport_unix_user}_${homeport_tag}"
-    homeport_home_volume="homeport_${homeport_unix_user}_home"
-    homeport_container_name="homeport-${homeport_unix_user}_${homeport_tag}"
+    homeport_image_name="homeport/image-${homeport_tag}"
+    homeport_home_volume="homeport-home-${homeport_unix_user}"
+    homeport_container_name="homeport-${homeport_tag}"
 }
 
 function homeport_exec() {
