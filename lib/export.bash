@@ -6,6 +6,9 @@ homeport module <<-usage
     usage: homeport export --archive <archive>
 usage
 
+homeport_emit_evaluated "$@" && exit
+homeport_labels $1 && shift
+
 trap cleanup EXIT SIGTERM SIGINT
 
 function cleanup() {
@@ -17,7 +20,7 @@ function cleanup() {
 dir=$(mktemp -d -t homeport_export.XXXXXX)
 
 declare argv
-argv=$(getopt --options +a: --long archive: -- "$@") || return
+argv=$(getopt --options +a: --long archive: -- "$@") || abend "cannot parse"
 eval "set -- $argv"
 
 while true; do
@@ -43,9 +46,5 @@ function homeport_export() {
 if [ "$homeport_archive" = "-" ]; then
     homeport_export
 else
-    homeport_archive=$(
-        cd "$(dirname '$homeport_archive')" &>/dev/null && \
-            printf "%s/%s" "$PWD" "${homeport_archive##*/}"
-    )
     homeport_export > "$homeport_archive"
 fi

@@ -9,29 +9,31 @@ function commas () {
     done
 }
 
-mkdir -p /var/lib/homeport/formula
+mkdir -p /var/lib/homeport/incoming/0
 
-while read -r package; do
-    echo package $package
-    if [[ "$package" = */* ]]; then
-        formula=${package%:*}
-        list=${package#*:}
-        if [ "$list" = "$package" ]; then
-            list=
-        fi
-        echo "FL $formula $list"
-        base="${formula##*/}"
-        destination="/var/lib/homeport/formula/$base"
-        cp "$formula" "$destination"
-        package="formula/$base"
-        if [ ! -z "$list" ]; then
-            package+=":$list"
-        fi
-        commas $list | xargs $destination
-    else
-        commas $package | xargs apt-get install -y
+count=$(ls /var/lib/homeport/incoming | grep '^[0-9][0-9]*$' | sort -n | tail -n 1)
+
+while read -r entry; do
+    let count=count+1
+    echo manifest entry $entry
+    formula=${entry%:*}
+    package="incoming/$count/formula/${formula##*/}"
+    list=${entry#*:}
+    if [ "$list" = "$entry" ]; then
+        list=
     fi
+    destination="/var/lib/homeport/$package"
+    echo "FL $package < $entry $formula $list $destination"
+    mkdir -p "${destination%/*}"
+    cp "/usr/share/homeport/$formula" "$destination"
+    if [ ! -z "$list" ]; then
+        package+=":$list"
+    fi
+    commas $list | xargs $destination
     echo "$package" >> /var/lib/homeport/manifest
-done < /usr/share/homeport/packages/manifest
+done < /usr/share/homeport/incoming/manifest
 
-rm -rf /usr/share/homeport/packages
+cd /var/lib/homeport && find . ! -type d
+cat /var/lib/homeport/manifest
+
+rm -rf /usr/share/homeport/incoming

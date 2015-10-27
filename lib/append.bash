@@ -27,22 +27,26 @@ dir=$(mktemp -d -t homeport_append.XXXXXXX)
 mkdir "$dir/src/" && homeport_source_tarball | \
     (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
 
-mkdir -p "$dir/src/packages/formula"
+count=0
+mkdir -p "$dir/src/incoming"
 while [ $# -ne 0 ]; do
     package=$1
     shift
-    if [[ "$package" = */* ]]; then
-        formula=${package%:*}
-        list=${package#*:}
-        echo LIST $list
-        relative="packages/formula/${formula##*/}"
-        cp "$formula" "$dir/src/$relative"
-        package="/usr/share/homeport/$relative"
-        if [ ! -z "$list" ]; then
-            package+=":$list"
-        fi
+    if [[ "$package" != */* ]]; then
+        package="$homeport_path/formula/apt-get:$package"
     fi
-    echo "$package" >> "$dir/src/packages/manifest"
+    formula=${package%:*}
+    list=${package#*:}
+    echo LIST $list
+    relative="incoming/$count/formula/${formula##*/}"
+    mkdir -p "$dir/src/incoming/$count/formula"
+    let count=count+1
+    cp "$formula" "$dir/src/$relative"
+    package="$relative"
+    if [ ! -z "$list" ]; then
+        package+=":$list"
+    fi
+    echo "$package" >> "$dir/src/incoming/manifest"
 done
 
 # todo: copy to /var/lib instead

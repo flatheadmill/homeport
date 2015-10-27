@@ -6,6 +6,9 @@ homeport module <<-usage
     usage: homeport import --archive <archive>
 usage
 
+homeport_emit_evaluated "$@" && exit
+homeport_labels $1 && shift
+
 trap cleanup EXIT SIGTERM SIGINT
 
 function cleanup() {
@@ -16,8 +19,7 @@ function cleanup() {
 
 dir=$(mktemp -d -t homeport_export.XXXXXX)
 
-declare argv
-argv=$(getopt --options +a: --long archive: -- "$@") || return
+argv=$(getopt --options +a: --long archive: -- "$@") || abend "cannot parse arguments"
 eval "set -- $argv"
 
 while true; do
@@ -36,36 +38,28 @@ done
 
 [ -z "$homeport_archive" ] && usage "--archive is required"
 
-mkdir "$dir/src/" "$dir/export/" && \
-    rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
+#mkdir "$dir/src/" "$dir/export/" && \
+#    rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
 
-tar -C "$dir/export/" -xzf "$homeport_archive"
+mkdir "$dir/src/" "$dir/export/"
+tar -C "$dir/export/" -xvzf "$homeport_archive"
 
-declare -a arguments
+arguments=()
 
 while read -r package; do
-    if [[ $package = */* ]]; then
-        formula=${package%:*}
-        list=${package#*:}
-        argument="$dir/export/$formula"
-        if [ ! -z "$list" ]; then
-            argument+=":$list"
-        fi
-        echo "PACKAGE ARGUMENT $package $argument"
-        arguments+=($argument)
-    else
-        arguments+=($package)
-    fi
+    arguments+=("$dir/export/$package")
 done < "$dir/export/manifest"
+
+echo "${arguments[@]}"
 
 exisitng_image=$(docker images | awk -v image=$homeport_image_name '
     $1 == image && $2 == "latest" { print }
 ' | wc -l | xargs echo)
 
-[ "$exisitng_image" -eq 0 ] && "$homeport_path/lib/create"
+[ "$exisitng_image" -eq 0 ] && "$homeport_path/lib/create.bash" "$homeport_tag"
 
 docker tag -f $homeport_image_name:latest $homeport_image_name:recovery
-{ "$homeport_path/lib/clear" && \
-    "$HOMEPORT_PATH/lib/append" "${arguments[@]}"; } && \
+{ "$homeport_path/lib/clear.bash" "$homeport_tag" && \
+    "$homeport_path/lib/append.bash" "$homeport_tag" "${arguments[@]}"; } && \
     docker rmi $homeport_image_name:recovery || \
     docker tag -f $homeport_image_name:recovery $homeport_image_name:latest
