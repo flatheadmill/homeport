@@ -93,3 +93,15 @@ $ homeport append example formula/replace:/etc/group,mysql,sql
 A formula is supposed to alter the system in a certain way, it declares the way
 a particular aspect of the system shall be, and each invocation of the formula
 is supposed to perform its changes in their entirety.
+
+## Saving Home Directories
+
+It is not possible to simply commit them, because there is home is a volume, and
+volumes are not kept in the image, they are in a directory on the host machine.
+
+Could freeze by creating an image, but I already want to solve the problem of
+file transfers between containers, so I'm going to work on that problem. You'll
+be able to rsync to a remove container. Thus, no freezing of home directories.
+If you want something to be shared through Docker Hub, put it in an image. If
+you want to update the home directory from a docker hub, maybe you can make an
+image of your own that mounts the volume, or something

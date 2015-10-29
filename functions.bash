@@ -49,6 +49,21 @@ function homeport_labels() {
     homeport_container_name="homeport-${homeport_tag}"
 }
 
+function homeport_select_image() {
+    [ -z "$1" ] && abend "Tag name required"
+    homeport_tag=$1
+    if [[ "$homeport_tag" = *@ ]]; then
+        homeport_image_type=user
+        homeport_unix_user=${homeport_tag%@}
+        homeport_home_volume="homeport-home-${homeport_unix_user}"
+    else
+        homeport_image_type=image
+        homeport_tag=${homeport_tag#@}
+        homeport_image_name="homeport/image-${homeport_tag}"
+        homeport_container_name="homeport-${homeport_tag}"
+    fi
+}
+
 function homeport_exec() {
     local command=$1
 
@@ -66,7 +81,9 @@ function homeport_exec() {
 
     export homeport_path homeport_docker_hub_account homeport_unix_user homeport_tag homeport_image_name homeport_unix_user homeport_home_volume homeport_evaluated homeport_container_name
     export homeport_command_path="$action" homeport_namespace
-    export -f usage abend getopt homeport homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable homeport_source_tarball homeport_labels
+    export -f getopt usage abend homeport \
+        homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable \
+        homeport_source_tarball homeport_labels homeport_select_image
 
     "$action" "$@"
 }

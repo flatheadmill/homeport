@@ -3,12 +3,15 @@
 set -e
 
 homeport module <<-usage
-    usage: homeport append
+    usage: homeport append <name> <packages>
 
-    options:
+    description:
 
-        -t, --tag <string>
-            an optional tag for the image so you can create different images
+        Update a Homeport image by appending packages and formulae.
+
+        The \`append\` command is used to add new packages to a Homeport image.
+        The packages are specified by package name and installed using
+        \`apt-get\`.
 usage
 
 homeport_emit_evaluated "$@" && exit
