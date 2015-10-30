@@ -43,10 +43,11 @@ FROM ubuntu
 
 MAINTAINER Alan Gutierrez, alan@prettyrobots.com
 
+RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server
+
 COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/foundation
 EXPOSE 22
 EOF
 
-docker build -t $homeport_image_name:_foundation "$dir"
-docker tag -f $homeport_image_name:_foundation  $homeport_image_name:latest
+docker build -t $homeport_image_name "$dir"
