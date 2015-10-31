@@ -1,9 +1,7 @@
 #!/bin/bash
 
-#rsync -av -e 'ssh -p 32768' ~/Sync/PrettyRobots/DetroitShapeFiles/ alan@192.168.99.100:~/DetroitShapeFiles/
- 
 homeport module <<-usage
-    usage: homeport rsync 
+    usage: homeport rsync
 usage
 
 homeport_emit_evaluated "$@" && exit

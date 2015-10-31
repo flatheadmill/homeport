@@ -69,7 +69,7 @@ function homeport_exec() {
 
     [ -z "$command" ] && abend "TODO: write usage"
 
-    local action="$homeport_path/lib/$command.bash"
+    local action="$homeport_path/bin/$command.bash"
 
     [ ! -e "$action"  ] && abend "invalid action: homeport $command"
 

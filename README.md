@@ -61,6 +61,9 @@ hello, world
 
 To come: installation from Ruby gems.
 
+To come: Note that, once you get Homeport running, you can use any Homeport
+environment as a place to work on homeport.
+
 ## Creating an Image
 
 Create an image with `homeport create <image>`. Add packages with `homeport
