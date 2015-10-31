@@ -2,38 +2,10 @@
 
 set -e
 
-function commas () {
-    local IFS=,
-    for arg in $1; do
-        echo $arg
-    done
-}
+mkdir -p /var/lib/homeport/appended/0
 
-mkdir -p /var/lib/homeport/incoming/0
+count=$(( $(ls /var/lib/homeport/appended | grep '^[0-9][0-9]*$' | sort -n | tail -n 1) + 1 ))
 
-count=$(ls /var/lib/homeport/incoming | grep '^[0-9][0-9]*$' | sort -n | tail -n 1)
+(cd /usr/share/homeport/append && bash invocation)
 
-while read -r entry; do
-    let count=count+1
-    echo manifest entry $entry
-    formula=${entry%:*}
-    package="incoming/$count/formula/${formula##*/}"
-    list=${entry#*:}
-    if [ "$list" = "$entry" ]; then
-        list=
-    fi
-    destination="/var/lib/homeport/$package"
-    echo "FL $package < $entry $formula $list $destination"
-    mkdir -p "${destination%/*}"
-    cp "/usr/share/homeport/$formula" "$destination"
-    if [ ! -z "$list" ]; then
-        package+=":$list"
-    fi
-    commas $list | xargs $destination
-    echo "$package" >> /var/lib/homeport/manifest
-done < /usr/share/homeport/incoming/manifest
-
-cd /var/lib/homeport && find . ! -type d
-cat /var/lib/homeport/manifest
-
-rm -rf /usr/share/homeport/incoming
+mv /usr/share/homeport/append /var/lib/homeport/appended/$count

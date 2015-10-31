@@ -7,3 +7,4 @@ function homeport_emit_evaluated() {
 }
 
 homeport_evaluated=0
+homeport_formula_path=docker:///homeport/homeport/usr/share/homeport

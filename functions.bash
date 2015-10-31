@@ -79,7 +79,12 @@ function homeport_exec() {
     homeport_container_name=homeport-${homeport_unix_user}_${homeport_tag}
     homeport_home_volume="homeport_${homeport_unix_user}_home"
 
-    export homeport_path homeport_docker_hub_account homeport_unix_user homeport_tag homeport_image_name homeport_unix_user homeport_home_volume homeport_evaluated homeport_container_name
+    homeport_formula_path="$homeport_path"
+
+    export homeport_path homeport_docker_hub_account homeport_unix_user \
+        homeport_tag homeport_image_name homeport_unix_user \
+        homeport_home_volume homeport_evaluated homeport_container_name \
+        homeport_formula_path
     export homeport_command_path="$action" homeport_namespace
     export -f getopt usage abend homeport \
         homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable \

@@ -27,30 +27,44 @@ function cleanup() {
 
 dir=$(mktemp -d -t homeport_append.XXXXXXX)
 
-mkdir "$dir/src/" && homeport_source_tarball | \
-    (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
+#{ homeport_source_tarball | (mkdir "$dir/src" && cd "$dir/src" && tar xvf -); } || abend "cannot create source archive"
+mkdir -p "$dir/src"
+{ (homeport_source_tarball || echo '\0') | \
+    (cd "$dir/src" && tar xf -); } || abend "cannot create source archive"
 
-count=0
-mkdir -p "$dir/src/incoming"
+mkdir -p "$dir/src/append"
+
+formula=$1
+shift
+
+[ -z "$formula" ] && abend "formula is required."
+
+if [[ "$formula" = formula/* ]]; then
+    formula="$homeport_formula_path"/"$formula"
+fi
+
+if [[ "$formula" = "docker:///"* ]]; then
+    docker_formula_stripped=${formula#docker:///}
+    formula_name=${docker_formula_stripped##*/}
+    docker_formula_path=/"${docker_formula_stripped#*/*/}"
+    docker_formula_image=${docker_formula_stripped%$docker_formula_path}
+    mkdir -p "$dir/formula/$formula_name"
+    docker run --rm --entrypoint=/bin/bash "$docker_formula_image" \
+        -c 'cd $0 && tar cf - .' "$docker_formula_path"  | \
+            (cd "$dir/formula/$formula_name" && tar xf -)
+    formula="$dir/formula/$formula_name"
+fi
+
+mkdir -p "$dir/src/append/formula"
+formula_name=${formula##*/}
+relative="append/formula/$formula_name"
+rsync -a "$formula/" "$dir/src/$relative/"
+invocation=$(printf %q "formula/$formula_name/install")
 while [ $# -ne 0 ]; do
-    package=$1
+    invocation+=$(printf ' %q' "$1")
     shift
-    if [[ "$package" != */* ]]; then
-        package="$homeport_path/formula/apt-get:$package"
-    fi
-    formula=${package%:*}
-    list=${package#*:}
-    echo LIST $list
-    relative="incoming/$count/formula/${formula##*/}"
-    mkdir -p "$dir/src/incoming/$count/formula"
-    let count=count+1
-    cp "$formula" "$dir/src/$relative"
-    package="$relative"
-    if [ ! -z "$list" ]; then
-        package+=":$list"
-    fi
-    echo "$package" >> "$dir/src/incoming/manifest"
 done
+echo "$invocation" >> "$dir/src/append/invocation"
 
 # todo: copy to /var/lib instead
 cat <<EOF > "$dir/Dockerfile"
