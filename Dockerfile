@@ -8,4 +8,4 @@ COPY . /usr/share/homeport/
 
 RUN find /usr/share/homeport
 
-ENTRYPOINT ["/bin/bash", "/usr/share/homeport/homeport.bash"]
+ENTRYPOINT ["/bin/bash", "/usr/share/homeport/homeport.bash", "--evaluated"]
