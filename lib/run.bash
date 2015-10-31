@@ -28,7 +28,7 @@ docker_rm=1 named=0 daemonize=0
 while true; do
     case "$1" in
         --docker)
-            if which boot2docker > /dev/null; then
+            if which docker-machine > /dev/null; then
                 host_docker="/usr/local/bin/docker"
             else
                 host_docker=$(which docker)
