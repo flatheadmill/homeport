@@ -113,3 +113,19 @@ shell in Homeport, that you ought to be able to bootstrap yourself into
 homeport, and that their should be a homeport formula. Thus, in order to create
 this property, I probably want to work from within a homeport to build homeport,
 etc, that it never needs to be installed anywhere, is is always an image.
+
+Or more simply, no leading anything and the word `formula` means that you use a
+default formula, otherwise say `./formula` to indicate that you want to use a
+formula off the local machine. We don't have to change as much as quickly if we
+do it this way, there ought to be a way to build a basic machine this way.
+
+Additionally, there can be some way to pull formulae out of images.
+
+```
+homeport append formula/apt-get zsh vim rsync git
+homeport append docker://bigeasy/homeport_extra:tag/formulae/node 0.12.7
+homeport append https://www.prettyrobots.com/formulae/node.tar.gz 0.12.7
+homeport append ./formula/tidy
+```
+
+And so on.
