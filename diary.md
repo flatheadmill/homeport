@@ -105,3 +105,11 @@ be able to rsync to a remove container. Thus, no freezing of home directories.
 If you want something to be shared through Docker Hub, put it in an image. If
 you want to update the home directory from a docker hub, maybe you can make an
 image of your own that mounts the volume, or something
+
+## Homeport Teleport
+
+It occurs to me now that it makes more sense to have teleporting put you in a
+shell in Homeport, that you ought to be able to bootstrap yourself into
+homeport, and that their should be a homeport formula. Thus, in order to create
+this property, I probably want to work from within a homeport to build homeport,
+etc, that it never needs to be installed anywhere, is is always an image.
