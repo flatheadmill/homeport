@@ -6,16 +6,23 @@ shell environments that you can run anywhere that Docker runs. They are
 lightweight and easy to distribute.
 
 Homeport images contain your dependencies. You can `push` and `pull` them to
-Docker Hub, collect them and trade them with your friends. Your personal data is
-kept in a home directory so that your project dependences are independent of
-your personal data.
+Docker Hub. You can  collect them and trade them with your friends. Your working
+directories data is kept in a home directory so that your project dependences
+are independent of your personal data.
 
-It's great way to do dependency management. It avoids cluttering your
+Homeport is a great way to do dependency management. It avoids cluttering your
 workstation with package utilities, locally running servers, and version
-switchers. You can keep your Homebrew to a minimimum.
+switchers. You can keep your Homebrew to a minimimum. You can do without a
+locally running `mysql` and `memcached`. You can skip `rvm` all together.
 
-If you have suggestions, please place them in [milestone
-discussion](https://github.com/bigeasy/homeport/issues/1).
+You can design for containerization of your application at the outset, by
+containerizing the development enviornment.
+
+## Contributing
+
+If you have suggestions, or general questions, please place them in [milestone
+discussion](https://github.com/bigeasy/homeport/issues/1) before opening an
+issue. Pull Requests are welcome, but we're trying to keep Homeport light.
 
 ## Requirements
 
