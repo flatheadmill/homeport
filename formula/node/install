@@ -7,13 +7,12 @@ version=$1
 apt-get install -y curl python make g++
 
 mkdir /tmp/src
-cd /tmp/src
-curl -LO http://nodejs.org/dist/v$version/node-v$version.tar.gz
+(cd /tmp/src && curl -LO http://nodejs.org/dist/v$version/node-v$version.tar.gz)
 
 checksumed=0
 while read -r line; do
     if [[ $line = $version' '* ]]; then
-        if [ $(sha256sum node-v$version.tar.gz | cut -f1 -d' ') = ${line#* } ]; then
+        if [ $(sha256sum /tmp/src/node-v$version.tar.gz | cut -f1 -d' ') = ${line#* } ]; then
             checksumed=1
         else
             echo "bad sha256sum for v$version" 1>&2
@@ -27,6 +26,7 @@ if [ $checksumed -ne 1 ]; then
     exit 1
 fi
 
+cd /tmp/src
 tar zxvf node-v$version.tar.gz
 cd /tmp/src/node-*
 pwd
