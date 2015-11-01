@@ -143,6 +143,14 @@ You can create your own formulas and invoke them using `homeport append`.
 Formulas are structured as directories containing an installation bundle. The
 installation is performed by a program named `install` inside the directory.
 
+An install script for Python pips would look like this.
+
+```bash
+#!/bin/bash
+
+pip install "$@"
+```
+
 To create a formula for  Python's `pip`, create a formula directory named `pip`.
 Then create an `install` program in that directory that invokes `pip`.
 
@@ -179,6 +187,17 @@ $ homeport append example formula/pip boto pygments
 
 The first invocation of `homeport append` above uses your own custom `pip`
 formula. The second invocation uses the `pip` formula that comes with Homeport.
+
+## Hopping with `ssh` and `rsync`
+
+*Ed: This is an outline.*
+
+`ssh` is primary. With some environments, you might have to hop through a couple
+of machines along the way.
+
+```
+$ homeport ssh alan@www.prettyrobots.com core@54.68.221.10 node
+```
 
 ## Hacking
 
