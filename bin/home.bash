@@ -34,6 +34,7 @@ ssh_key=$(ssh-add -L | awk -v sought="$ssh_key_file" '
 exists=$(docker ps --no-trunc -a | awk -v volume=$homeport_home_volume '$(NF) == volume { print $(NF) }')
 
 if [ -z "$exists" ]; then
-    docker run --name $homeport_home_volume -v "/home/homeport" homeport/blank
-    docker run --rm --volumes-from $homeport_home_volume -v "$homeport_path"/container/home:/usr/local/bin/home:ro -it ubuntu /usr/local/bin/home "$ssh_key"
+    docker run --name $homeport_home_volume -v "/home/homeport" ubuntu bash -c 'exit'
+    docker run --rm --volumes-from $homeport_home_volume -v "$homeport_path"/container/home:/usr/local/bin/home:ro -it ubuntu \
+        bash -c 'mkdir -p /home/homeport/.ssh && echo "$0" >> /home/homeport/.ssh/authorized_keys && chown -R 701:701 /home/homeport && chmod -R go-rwx /home/homeport/.ssh' "$ssh_key"
 fi
