@@ -31,11 +31,11 @@ mkdir "$dir/src/" && homeport_source_tarball | \
 
 mkdir -p "$HOME/.homeport"
 
-echo $homeport_image_name
+echo $homeport_image
 cat <<EOF > "$dir/src/configuration"
 homeport_unix_user=$homeport_unix_user
 homeport_docker_hub_account=$homeport_docker_hub_account
-homeport_image_name=$homeport_image_name
+homeport_image=$homeport_image
 EOF
 
 cat <<EOF > "$dir/Dockerfile"
@@ -50,4 +50,4 @@ RUN /usr/share/homeport/container/foundation
 EXPOSE 22
 EOF
 
-docker build -t $homeport_image_name "$dir"
+docker build -t $homeport_image "$dir"

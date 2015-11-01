@@ -21,14 +21,14 @@ if [[ "$dir" ==  *' '* ]]; then
     abend "Cannot use a temp directory that contains spaces. TMPDIR=$TMPDIR"
 fi
 
-docker cp "$homeport_container_name":/etc/ssh/ssh_host_rsa_key.pub "$dir/ssh_host_rsa_key.pub"
+docker cp "$homeport_container":/etc/ssh/ssh_host_rsa_key.pub "$dir/ssh_host_rsa_key.pub"
 
 if [ -z "$DOCKER_HOST" ]; then
-    ssh_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_container_name")
+    ssh_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_container")
 else
     ssh_host=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
 fi
-ssh_port=$(docker port $homeport_container_name 22 | cut -d: -f2)
+ssh_port=$(docker port $homeport_container 22 | cut -d: -f2)
 
 echo "[$ssh_host]:$ssh_port $(cut -d' ' -f1,2 < $dir/ssh_host_rsa_key.pub)" > "$dir/known_hosts"
 

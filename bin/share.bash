@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$DOCKER_HOST" ]; then
-    homeport_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_image_name")
+    homeport_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_image")
 else
     homeport_host=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
 fi

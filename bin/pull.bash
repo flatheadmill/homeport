@@ -23,4 +23,4 @@ repository_image=$1
 
 [ -z "repository" ] && abend "repository image name required"
 
-docker pull "$repository_image" && docker tag "$repository_image" "$homeport_image_name"
+docker pull "$repository_image" && docker tag "$repository_image" "$homeport_image"

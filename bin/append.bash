@@ -68,7 +68,7 @@ echo "$invocation" >> "$dir/src/append/invocation"
 
 # todo: copy to /var/lib instead
 cat <<EOF > "$dir/Dockerfile"
-FROM $homeport_image_name:latest
+FROM $homeport_image:latest
 
 MAINTAINER Alan Gutierrez, alan@prettyrobots.com
 
@@ -76,6 +76,6 @@ COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/install
 EOF
 
-docker build -t $homeport_image_name:_intermediate "$dir"
-docker tag -f $homeport_image_name:_intermediate $homeport_image_name:latest
-docker rmi $homeport_image_name:_intermediate
+docker build -t $homeport_image:_intermediate "$dir"
+docker tag -f $homeport_image:_intermediate $homeport_image:latest
+docker rmi $homeport_image:_intermediate

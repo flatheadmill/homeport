@@ -44,16 +44,16 @@ function homeport_labels() {
     else
         homeport_unix_user=$USER
     fi
-    homeport_image_name="homeport/image-${homeport_tag}"
+    homeport_image="homeport/image-${homeport_tag}"
     homeport_home_container="homeport-home-${homeport_unix_user}"
-    homeport_container_name="homeport-${homeport_tag}"
+    homeport_container="homeport-${homeport_tag}"
 }
 
 function homeport_select_image() {
     [ -z "$1" ] && abend "Tag name required"
     homeport_tag=$1
-    homeport_image_name="homeport/image-${homeport_tag}"
-    homeport_container_name="homeport-${homeport_tag}"
+    homeport_image="homeport/image-${homeport_tag}"
+    homeport_container="homeport-${homeport_tag}"
 }
 
 function homeport_exec() {
@@ -67,15 +67,15 @@ function homeport_exec() {
 
     shift
 
-    homeport_image_name=homeport/${homeport_unix_user}_${homeport_tag}
-    homeport_container_name=homeport-${homeport_unix_user}_${homeport_tag}
+    homeport_image=homeport/${homeport_unix_user}_${homeport_tag}
+    homeport_container=homeport-${homeport_unix_user}_${homeport_tag}
     homeport_home_container="homeport_${homeport_unix_user}_home"
 
     homeport_formula_path="$homeport_path"
 
     export homeport_path homeport_docker_hub_account homeport_unix_user \
-        homeport_tag homeport_image_name homeport_unix_user \
-        homeport_home_container homeport_evaluated homeport_container_name \
+        homeport_tag homeport_image homeport_unix_user \
+        homeport_home_container homeport_evaluated homeport_container \
         homeport_formula_path
     export homeport_command_path="$action" homeport_namespace
     export -f getopt usage abend homeport \

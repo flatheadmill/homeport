@@ -35,7 +35,7 @@ while true; do
             fi
             docker_options+="-v $host_docker:$host_docker:ro "
             docker_options+='-v /var/run/docker.sock:/var/run/docker.sock:rw '
-            docker_options+="-e HOMEPORT_DOCKER_IMAGE_NAME=$homeport_image_name "
+            docker_options+="-e HOMEPORT_DOCKER_IMAGE_NAME=$homeport_image "
             shift
             ;;
         --privileged)
@@ -63,15 +63,15 @@ done
 exclude=
 while read -r line; do
     exclude+="${line%%=*}="
-done < <(docker run --volumes-from $homeport_home_container --rm $homeport_image_name bash -c 'printenv')
+done < <(docker run --volumes-from $homeport_home_container --rm $homeport_image bash -c 'printenv')
 
 docker='docker run '
 docker+='-P -d '
-docker+='--name '$homeport_container_name' '
+docker+='--name '$homeport_container' '
 docker+='--volumes-from '$homeport_home_container' '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options
-docker+=$homeport_image_name' '
+docker+=$homeport_image' '
 
 docker+='/usr/share/homeport/container/sshd '
 docker+=$(printf %q $exclude)

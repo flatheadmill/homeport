@@ -52,14 +52,14 @@ done < "$dir/export/manifest"
 
 echo "${arguments[@]}"
 
-exisitng_image=$(docker images | awk -v image=$homeport_image_name '
+exisitng_image=$(docker images | awk -v image=$homeport_image '
     $1 == image && $2 == "latest" { print }
 ' | wc -l | xargs echo)
 
 [ "$exisitng_image" -eq 0 ] && "$homeport_path/lib/create.bash" "$homeport_tag"
 
-docker tag -f $homeport_image_name:latest $homeport_image_name:recovery
+docker tag -f $homeport_image:latest $homeport_image:recovery
 { "$homeport_path/lib/clear.bash" "$homeport_tag" && \
     "$homeport_path/lib/append.bash" "$homeport_tag" "${arguments[@]}"; } && \
-    docker rmi $homeport_image_name:recovery || \
-    docker tag -f $homeport_image_name:recovery $homeport_image_name:latest
+    docker rmi $homeport_image:recovery || \
+    docker tag -f $homeport_image:recovery $homeport_image:latest

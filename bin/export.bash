@@ -40,7 +40,7 @@ done
 [ -z "$homeport_archive" ] && usage "--archive is required"
 
 function homeport_export() {
-    docker run --rm $homeport_image_name:latest tar -C /var/lib/homeport -czf - .
+    docker run --rm $homeport_image:latest tar -C /var/lib/homeport -czf - .
 }
 
 if [ "$homeport_archive" = "-" ]; then
