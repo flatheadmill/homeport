@@ -24,20 +24,7 @@ function cleanup() {
     [ ! -z "$dir" ] && rm -rf "$dir"
 }
 
-declare argv
-argv=$(getopt --options +v:p:Ad --long docker,volumes-from:,link:,name: -- "$@") || exit 1
-eval "set -- $argv"
+homeport_exec known-hosts "$homeport_tag" > "$dir/known_hosts"
+read -r -a ssh_host_port <<< "$(sed 's/^\[\([0-9.]*\)\]:\([0-9]*\).*$/\1 \2/' "$dir/known_hosts")"
 
-docker cp "$homeport_container":/etc/ssh/ssh_host_rsa_key.pub "$dir/ssh_host_rsa_key.pub"
-
-
-ssh_port=$(docker port $homeport_container 22 | cut -d: -f2)
-if [ -z "$DOCKER_HOST" ]; then
-    ssh_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_container")
-else
-    ssh_host=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
-fi
-
-echo "[$ssh_host]:$ssh_port $(cut -d' ' -f1,2 < $dir/ssh_host_rsa_key.pub)" > $dir/known_hosts
-
-ssh -o "UserKnownHostsFile=$dir/known_hosts" -A -l homeport -p "$ssh_port" "$ssh_host" "$@"
+ssh -o "UserKnownHostsFile=$dir/known_hosts" -A -l homeport -p "${ssh_host_port[1]}" "${ssh_host_port[0]}" "$@"

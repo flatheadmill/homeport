@@ -1,3 +1,7 @@
+function homeport_exec() {
+    bash -c "$(docker run --rm homeport/homeport "$@")"
+}
+
 function homeport_source_tarball() {
     docker run --rm --entrypoint=/bin/bash homeport/homeport -c '(cd /usr/share/homeport && tar cf - .)'
 }

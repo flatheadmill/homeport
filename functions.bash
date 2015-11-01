@@ -55,32 +55,3 @@ function homeport_select_image() {
     homeport_image="homeport/image-${homeport_tag}"
     homeport_container="homeport-${homeport_tag}"
 }
-
-function homeport_exec() {
-    local command=$1
-
-    [ -z "$command" ] && abend "TODO: write usage"
-
-    local action="$homeport_path/bin/$command.bash"
-
-    [ ! -e "$action"  ] && abend "invalid action: homeport $command"
-
-    shift
-
-    homeport_image=homeport/${homeport_unix_user}_${homeport_tag}
-    homeport_container=homeport-${homeport_unix_user}_${homeport_tag}
-    homeport_home_container="homeport_${homeport_unix_user}_home"
-
-    homeport_formula_path="$homeport_path"
-
-    export homeport_path homeport_docker_hub_account homeport_unix_user \
-        homeport_tag homeport_image homeport_unix_user \
-        homeport_home_container homeport_evaluated homeport_container \
-        homeport_formula_path
-    export homeport_command_path="$action" homeport_namespace
-    export -f getopt usage abend homeport \
-        homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable \
-        homeport_source_tarball homeport_labels homeport_select_image
-
-    "$action" "$@"
-}
