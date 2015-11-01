@@ -23,8 +23,4 @@ repository_image=$1
 
 [ -z "repository" ] && abend "repository image name required"
 
-if [ "$homeport_image_type" = "user" ]; then
-    docker pull "$repository_image" && docker run --name "$homeport_home_volume" -v /home/homeport "$repository_image"
-else
-    docker pull "$repository_image" && docker tag "$repository_image" "$homeport_image_name"
-fi
+docker pull "$repository_image" && docker tag "$repository_image" "$homeport_image_name"

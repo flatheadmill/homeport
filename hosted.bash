@@ -10,7 +10,7 @@ function homeport_emit_evaluated() {
         homeport_emit_evaluated_variable homeport_namespace
         homeport_emit_evaluated_variable homeport_tag
         homeport_emit_evaluated_variable homeport_image_name
-        homeport_emit_evaluated_variable homeport_home_volume
+        homeport_emit_evaluated_variable hoemport_home_container
         printf -v vargs '%q ' "$@"
         echo ''
         echo 'eval set -- '$vargs

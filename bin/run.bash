@@ -63,12 +63,12 @@ done
 exclude=
 while read -r line; do
     exclude+="${line%%=*}="
-done < <(docker run --volumes-from $homeport_home_volume --rm $homeport_image_name bash -c 'printenv')
+done < <(docker run --volumes-from $homeport_home_container --rm $homeport_image_name bash -c 'printenv')
 
 docker='docker run '
 docker+='-P -d '
 docker+='--name '$homeport_container_name' '
-docker+='--volumes-from '$homeport_home_volume' '
+docker+='--volumes-from '$homeport_home_container' '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options
 docker+=$homeport_image_name' '

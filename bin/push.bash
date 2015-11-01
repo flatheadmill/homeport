@@ -23,10 +23,5 @@ repository_image=$1
 
 [ -z "$repository_image" ] && abend "repository image name required"
 
-if [ "$homeport_image_type" = "user" ]; then
-    docker commit "$homeport_home_volume" "$repository_image" && docker push "$repository_image"
-    docker rmi "$repository_image"
-else
-    docker tag "$homeport_image_name" "$repository_image" && docker push "$repository_image"
-    docker rmi "$repository_image"
-fi
+docker tag "$homeport_image_name" "$repository_image" && docker push "$repository_image"
+docker rmi "$repository_image"
