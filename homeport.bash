@@ -53,30 +53,10 @@ source "$homeport_path/functions.bash"
 source "$homeport_path/hosted.bash"
 source "$homeport_path/getopt.bash"
 
-# Node that the `+` in the options sets scanning mode to stop at the first
-# non-option parameter, otherwise we'd have to explicilty use `--` before the
-# sub-command.
-declare argv
-argv=$(getopt --options +e --long evaluated -- "$@") || abend "cannot parse arguments"
-eval "set -- $argv"
-
 homeport_evaluated=0
 
 if [ -e ~/.homeport.conf ]; then
     source ~/.homeport.conf
 fi
-
-while true; do
-    case "$1" in
-        --evaluated | -e)
-            homeport_evaluated=1
-            shift
-            ;;
-        --)
-            shift
-            break
-            ;;
-    esac
-done
 
 homeport_exec "$@"

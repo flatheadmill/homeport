@@ -1,4 +1,24 @@
 function homeport_exec() {
+    # Node that the `+` in the options sets scanning mode to stop at the first
+    # non-option parameter, otherwise we'd have to explicilty use `--` before the
+    # sub-command.
+    declare argv
+    argv=$(getopt --options +e --long evaluated -- "$@") || abend "cannot parse arguments"
+    eval "set -- $argv"
+
+    while true; do
+        case "$1" in
+            --evaluated | -e)
+                homeport_evaluated=1
+                shift
+                ;;
+            --)
+                shift
+                break
+                ;;
+        esac
+    done
+
     local command=$1
 
     [ -z "$command" ] && abend "TODO: write usage"
