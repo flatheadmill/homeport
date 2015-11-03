@@ -74,6 +74,7 @@ function homeport_select_image() {
     homeport_image="homeport/image-${homeport_tag}"
     homeport_container="homeport-${homeport_tag}"
 }
+
 function homeport_ssh_config() {
     dir=$1
     fetch=
