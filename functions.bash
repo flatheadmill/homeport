@@ -35,9 +35,23 @@ function abend() {
     usage 1
 }
 
-function homeport_labels() {
+function homeport_get_hops_and_tag() {
+    hompeort_hops=()
+    while [ $# -ne 0 ]; do
+        if [[ "$1" = *@* ]]; then
+            homeport_hops+=("$1")
+            shift
+        else
+            break
+        fi
+    done
+    homeport_get_tag "$@"
+}
+
+function homeport_get_tag() {
     [ -z "$1" ] && abend "Tag name required"
     homeport_tag=$1
+    shift
     if [[ "$homeport_tag" = *@* ]]; then
         homeport_unix_user=${homeport_tag%@*}
         homeport_tag=${homeport_tag#*@}
@@ -47,6 +61,7 @@ function homeport_labels() {
     homeport_image="homeport/image-${homeport_tag}"
     homeport_home_container="homeport-home-${homeport_unix_user}"
     homeport_container="homeport-${homeport_tag}"
+    printf -v homeport_vargs ' %q' "$@"
 }
 
 function homeport_select_image() {
@@ -54,4 +69,36 @@ function homeport_select_image() {
     homeport_tag=$1
     homeport_image="homeport/image-${homeport_tag}"
     homeport_container="homeport-${homeport_tag}"
+}
+function homeport_ssh_config() {
+    dir=$1
+    fetch=
+    if [ ${#homeport_hops[@]} -eq 0 ]; then
+        touch "$dir/config"
+    else
+        separator=
+        for hop in "${homeport_hops[@]}"; do
+            fetch+=$separator
+            separator=' '
+            ssh_host=${hop#*@}
+            ssh_port=${ssh_host#*:}
+            if [ "$ssh_port" = "$ssh_host" ]; then
+                ssh_port=22
+            fi
+            ssh_host=${ssh_host%:*}
+            ssh_user=${hop%@*}
+            fetch+="ssh -A -p $ssh_port -l $ssh_user $ssh_host"
+        done
+        proxy_command="ProxyCommand $fetch -W %h:%p 2> /dev/null" >> "$dir/config"
+    fi
+
+    homeport_evaluatable known-hosts $homeport_tag
+    homeport_known_hosts=$(homeport_evaluatable known-hosts $homeport_tag | $fetch bash 2> /dev/null)
+
+    IFS=: read -ra destination <<< "$(echo "$homeport_known_hosts" | sed 's/\[\([0-9.]*\)\]:\([0-9]*\).*/\1:\2/')"
+    echo "$homeport_known_hosts" > "$dir/known_hosts"
+    echo "Host ${destination[0]}" >> "$dir/config"
+    echo "Port ${destination[1]}" >> "$dir/config"
+    echo "UserKnownHostsFile $dir/known_hosts" >> "$dir/config"
+    echo "$proxy_command" >> "$dir/config"
 }

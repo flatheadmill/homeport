@@ -1,3 +1,7 @@
+function homeport_evaluatable() {
+    "$homeport_path/homeport.bash" --evaluated "$@"
+}
+
 function homeport_exec() {
     # Node that the `+` in the options sets scanning mode to stop at the first
     # non-option parameter, otherwise we'd have to explicilty use `--` before the
@@ -42,7 +46,8 @@ function homeport_exec() {
     export homeport_command_path="$action" homeport_namespace
     export -f getopt usage abend homeport \
         homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable \
-        homeport_source_tarball homeport_labels homeport_select_image
+        homeport_source_tarball homeport_get_tag homeport_get_hops_and_tag \
+        homeport_select_image homeport_ssh_config homeport_evaluatable
 
     "$action" "$@"
 }

@@ -12,7 +12,8 @@ homeport module <<-usage
 usage
 
 homeport_emit_evaluated "$@" && exit
-homeport_labels $1 && shift
+homeport_get_hops_and_tag "$@"
+set -- $homeport_vargs
 
 trap cleanup EXIT SIGTERM SIGINT
 
