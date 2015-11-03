@@ -97,7 +97,6 @@ function homeport_ssh_config() {
         proxy_command="ProxyCommand $fetch -W %h:%p 2> /dev/null" >> "$dir/config"
     fi
 
-    homeport_evaluatable known-hosts $homeport_tag
     homeport_known_hosts=$(homeport_evaluatable known-hosts $homeport_tag | $fetch bash 2> /dev/null)
 
     IFS=: read -ra destination <<< "$(echo "$homeport_known_hosts" | sed 's/\[\([0-9.]*\)\]:\([0-9]*\).*/\1:\2/')"
