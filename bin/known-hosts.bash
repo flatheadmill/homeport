@@ -6,7 +6,7 @@ usage
 
 homeport_emit_evaluated "$@" && exit
 homeport_get_hops_and_tag "$@"
-set -- $homeport_vargs
+set -- $homeport_argv
 
 dir=$(mktemp -d -t homeport_rsync.XXXXXXX)
 

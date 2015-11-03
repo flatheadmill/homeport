@@ -62,9 +62,9 @@ function homeport_get_tag() {
     homeport_home_container="homeport-home-${homeport_unix_user}"
     homeport_container="homeport-${homeport_tag}"
     if [ $# -eq 0 ]; then
-        homeport_vargs=''
+        homeport_argv=''
     else
-        printf -v homeport_vargs ' %q' "$@"
+        printf -v homeport_argv ' %q' "$@"
     fi
 }
 
