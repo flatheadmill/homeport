@@ -42,25 +42,20 @@ done
 #mkdir "$dir/src/" "$dir/export/" && \
 #    rsync -a "$HOMEPORT_PATH/" "$dir/src/" || abend "cannot create source archive"
 
-mkdir "$dir/src/" "$dir/export/"
-tar -C "$dir/export/" -xvzf "$homeport_archive"
+mkdir -p "$dir/src/import"
+{ (homeport_source_tarball || echo '\0') | \
+    (cd "$dir/src" && tar xf -); } || abend "cannot create source archive"
+tar -C "$dir/src/import/" -xvzf "$homeport_archive"
 
-arguments=()
+cat <<EOF > "$dir/Dockerfile"
+FROM $homeport_image:latest
 
-while read -r package; do
-    arguments+=("$dir/export/$package")
-done < "$dir/export/manifest"
+MAINTAINER Alan Gutierrez, alan@prettyrobots.com
 
-echo "${arguments[@]}"
+COPY ./src/ /usr/share/homeport/
+RUN /usr/share/homeport/container/import
+EOF
 
-exisitng_image=$(docker images | awk -v image=$homeport_image '
-    $1 == image && $2 == "latest" { print }
-' | wc -l | xargs echo)
-
-[ "$exisitng_image" -eq 0 ] && "$homeport_path/lib/create.bash" "$homeport_tag"
-
-docker tag -f $homeport_image:latest $homeport_image:recovery
-{ "$homeport_path/lib/clear.bash" "$homeport_tag" && \
-    "$homeport_path/lib/append.bash" "$homeport_tag" "${arguments[@]}"; } && \
-    docker rmi $homeport_image:recovery || \
-    docker tag -f $homeport_image:recovery $homeport_image:latest
+docker build -t $homeport_image:_intermediate "$dir"
+docker tag -f $homeport_image:_intermediate $homeport_image:latest
+docker rmi $homeport_image:_intermediate

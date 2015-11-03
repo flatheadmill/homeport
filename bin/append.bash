@@ -74,7 +74,7 @@ FROM $homeport_image:latest
 MAINTAINER Alan Gutierrez, alan@prettyrobots.com
 
 COPY ./src/ /usr/share/homeport/
-RUN /usr/share/homeport/container/install
+RUN /usr/share/homeport/container/install /usr/share/homeport/append
 EOF
 
 docker build -t $homeport_image:_intermediate "$dir"

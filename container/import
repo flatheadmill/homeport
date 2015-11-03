@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+cat /usr/share/homeport/import/appended/*/invocation
+
+while read -r count; do
+    /usr/share/homeport/container/install "/usr/share/homeport/import/appended/$count"
+done < <(ls "/usr/share/homeport/import/appended" | grep '^[0-9][0-9]*$' | sort -n | tail -n +2)
