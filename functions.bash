@@ -61,7 +61,11 @@ function homeport_get_tag() {
     homeport_image="homeport/image-${homeport_tag}"
     homeport_home_container="homeport-home-${homeport_unix_user}"
     homeport_container="homeport-${homeport_tag}"
-    printf -v homeport_vargs ' %q' "$@"
+    if [ $# -eq 0 ]; then
+        homeport_vargs=''
+    else
+        printf -v homeport_vargs ' %q' "$@"
+    fi
 }
 
 function homeport_select_image() {
