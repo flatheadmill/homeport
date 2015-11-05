@@ -2,8 +2,6 @@
 
 set -e
 
-apt-get update && apt-get -y upgrade && apt-get -y autoremove
-
 mkdir /etc/homeport
 mv /usr/share/homeport/configuration /etc/homeport/
 
