@@ -1,6 +1,8 @@
 [![Stories in Ready](https://badge.waffle.io/bigeasy/homeport.png?label=ready&title=Ready)](https://waffle.io/bigeasy/homeport)
 # Homeport
 
+*TK: Undocumented hotness: `ssh` and `rsync` hopping, image flattening.*
+
 Homeport is a Dockerized Linux development environment. It creates Dockerized
 shell environments that you can run anywhere that Docker runs. They are
 lightweight and easy to distribute.
@@ -26,6 +28,10 @@ issue. Pull Requests are welcome, but we're trying to keep Homeport light.
 
 ## Requirements
 
+You'll need an installation of Docker or Docker Machine.
+
+Homeport runs on Linux and OS X.
+
 You must manage your ssh keys using `ssh-agent`.
 
 ```console
@@ -35,41 +41,27 @@ $ ssh-add -l
 
 If you don't do this already, now's the time to learn.
 
-You'll need an installation of Docker or Docker Machine. Homeport runs on Linux
-and OS X.
-
 ## Installation
 
-The easiest way to get started with Homebrew is to run it from within Docker.
+You can install on OS X using Homebrew.
 
 ```console
-$ bash -c "$(docker --run homebrew/homebrew shell)"
-homeport@homeport:
-```
-
-The command above will drop you into a Homeport shell. There you can run
-commands using `homeport <command>`.
-
-There are some command that are useful to run from the host. You can run those
-commands by creating the followsing shell program.
-
-```bash
-#!/bin/bash
-
-bash -C "$(docker --run homeport/homeport "$@")"
-```
-
-You can now put that program in your path, or invoke it directly.
-
-```console
-$ ./homeport hello
+$ brew tap bigeasy/homeport
+$ brew install homeport
+$ homeport hello
 hello, world
 ```
 
-To come: installation from Ruby gems.
+On Linux you can use the bootstrap script to run Homeport from Docker.
 
-To come: Note that, once you get Homeport running, you can use any Homeport
-environment as a place to work on homeport.
+```console
+$ sudo bash -c "$(docker run --rm homeport/homeport script /usr/local/bin/homeport)"
+$ homeport hello
+```
+
+Running Homeport from within Docker is going have a slight delay when you invoke
+commands, but it's not so bad. Besides, one you get homeport up and running, you
+can always run Homeport in Homeport which is really snappy.
 
 ## Creating an Image
 
