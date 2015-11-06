@@ -46,7 +46,7 @@ If you don't do this already, now's the time to learn.
 You can install on OS X using Homebrew.
 
 ```console
-$ brew tap bigeasy/homeport
+$ brew tap bigeasy/homebrew
 $ brew install homeport
 $ homeport hello
 hello, world
