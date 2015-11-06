@@ -49,9 +49,9 @@ pushd "${homeport_file%/*}" > /dev/null
 homeport_path=$(pwd)
 popd > /dev/null
 
-source "$homeport_path/functions.bash"
-source "$homeport_path/externalized.bash"
-source "$homeport_path/getopt.bash"
+source "$homeport_path/lib/functions.bash"
+source "$homeport_path/lib/externalized.bash"
+source "$homeport_path/lib/getopt.bash"
 
 homeport_evaluated=0
 
