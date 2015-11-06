@@ -50,7 +50,7 @@ homeport_path=$(pwd)
 popd > /dev/null
 
 source "$homeport_path/functions.bash"
-source "$homeport_path/hosted.bash"
+source "$homeport_path/externalized.bash"
 source "$homeport_path/getopt.bash"
 
 homeport_evaluated=0
