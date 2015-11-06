@@ -191,6 +191,19 @@ of machines along the way.
 $ homeport ssh alan@www.prettyrobots.com core@54.68.221.10 node
 ```
 
+## Apple Sharing
+
+If you want to browse your Homeport home directories from the Finder, you can
+use Apple file sharing from Homeport. (Some assmebly required.)
+
+```
+$ homeport create netatalk
+$ homeport append netatalk formula/netatalk
+$ open $(homeport share apple)
+```
+
+You should now be looking at your home directory in Finder.
+
 ## Hacking
 
 Notes to self, installing Vagrant to install Ubuntu.

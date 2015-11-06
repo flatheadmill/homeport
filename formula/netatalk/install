@@ -13,18 +13,21 @@ sed -i.bak -e 's@/usr/bin/dbus-@/bin/dbus-@g' /etc/default/netatalk
 
 echo '- -tcp -noddp -uamlist uams_dhx.so,uams_dhx2.so -nosavepassword' >> /etc/netatalk/afpd.conf
 
-echo "$homeport_unix_user":"$password" | chpasswd
+echo "homeport":"$password" | chpasswd
 
 mkdir -p /usr/local/bin
+mkdir -p /usr/local/etc
 
 cat <<EOF > /usr/local/bin/netatalk
 #!/bin/bash
 
-sudo /etc/init.d/dbus restart > /dev/null
-sudo /etc/init.d/avahi-daemon restart > /dev/null
-sudo /etc/init.d/netatalk restart > /dev/null
+docker_host_address=\$1
 
-echo "afp://$homeport_unix_user:$password@\$1"
+/etc/init.d/dbus restart > /dev/null
+/etc/init.d/avahi-daemon restart > /dev/null
+/etc/init.d/netatalk restart > /dev/null
+
+echo "afp://homeport:$password@\$docker_host_address" > /usr/local/etc/netatalk
 EOF
 
 chmod 755 /usr/local/bin/netatalk

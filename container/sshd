@@ -2,6 +2,7 @@
 
 declare -A exclude
 IFS='=' read -ra excludes <<< "$1"
+shift
 for i in "${excludes[@]}"; do
     exclude[$i]=1
 done
@@ -14,5 +15,9 @@ while read -r line; do
 done < <(printenv | sort) >> /etc/environment
 
 cat /etc/environment
+
+if [ $# -ne 0 ]; then
+    eval "$@"
+fi
 
 /usr/sbin/sshd -D

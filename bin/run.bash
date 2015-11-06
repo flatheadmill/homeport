@@ -21,7 +21,7 @@ ssh_options=''
 docker_options=''
 
 declare argv
-argv=$(getopt --options +e:v:p:A --long privileged,docker,volumes-from:,link: -- "$@") || exit 1
+argv=$(getopt --options +e:v:p:A --long label:,privileged,docker,volumes-from:,link: -- "$@") || exit 1
 eval "set -- $argv"
 
 docker_rm=1 named=0 daemonize=0
@@ -43,7 +43,7 @@ while true; do
             docker_options+=$(printf %q "$1")' '
             shift
             ;;
-        -e | -v | -p | --volumes-from | --link)
+        -e | -v | -p | --volumes-from | --link | --label)
             docker_options+=$(printf %q "$1")' '$(printf %q "$2")' '
             shift
             shift
@@ -61,7 +61,6 @@ while true; do
     esac
 done
 
-exclude=
 while read -r line; do
     exclude+="${line%%=*}="
 done < <(docker run --volumes-from $homeport_home_container --rm $homeport_image bash -c 'printenv')
@@ -76,5 +75,10 @@ docker+=$homeport_image' '
 
 docker+='/usr/share/homeport/container/sshd '
 docker+=$(printf %q $exclude)
+
+if [ $# -ne 0 ]; then
+    printf -v sshd_execute ' %q' "$@"
+    docker+="$sshd_execute"
+fi
 
 eval $docker
