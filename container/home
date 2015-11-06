@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -e
-
-key=$1
-mkdir -p "/home/homeport/.ssh"
-echo "$key" >> /home/homeport/.ssh/authorized_keys
-chown -R 701:701 /home/homeport

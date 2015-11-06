@@ -35,6 +35,6 @@ exists=$(docker ps --no-trunc -a | awk -v volume=$homeport_home_container '$(NF)
 
 if [ -z "$exists" ]; then
     docker run --name $homeport_home_container -v "/home/homeport" ubuntu bash -c 'exit'
-    docker run --rm --volumes-from $homeport_home_container -v "$homeport_path"/container/home:/usr/local/bin/home:ro -it ubuntu \
+    docker run --rm --volumes-from $homeport_home_container -it ubuntu \
         bash -c 'mkdir -p /home/homeport/.ssh && echo "$0" >> /home/homeport/.ssh/authorized_keys && chown -R 701:701 /home/homeport && chmod -R go-rwx /home/homeport/.ssh' "$ssh_key"
 fi
