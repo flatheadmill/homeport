@@ -27,6 +27,24 @@ function cleanup() {
     rm -rf "$dir"
 }
 
+declare argv
+argv=$(getopt --options + --long no-cache: -- "$@") || exit 1
+eval "set -- $argv"
+
+while true; do
+    case "$1" in
+        --no-cache)
+            docker_options+=$separator$(printf %q "$1")
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+    separator=' '
+done
+
 mkdir "$dir/src/" && homeport_source_tarball | \
     (cd "$dir/src" && tar xf -)|| abend "cannot create source archive"
 
@@ -51,4 +69,4 @@ RUN /usr/share/homeport/container/foundation
 EXPOSE 22
 EOF
 
-docker build -t $homeport_image "$dir"
+docker build $docker_options -t $homeport_image "$dir"
