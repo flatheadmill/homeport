@@ -235,3 +235,10 @@ $ sudo apt-get install -y docker-engine
 $ sudo usermod -aG docker vagrant
 $ docker run hello-world
 ```
+
+## Whad we learn?
+
+ * If there is some hard and fast shobboleth, break it. Candy falls out.
+ * `ssh` does 80% (or more) of everything you'd ever need from the network.
+ * `printf -v var '%q'` is how you do a level of indirection.
+ * evaluate bash as a script instead of piping, you get to use arguments.
