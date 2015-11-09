@@ -15,7 +15,7 @@ usage
 
 homeport_emit_evaluated "$@" && exit
 homeport_get_hops_and_tag "$@"
-set -- $homeport_argv
+eval "set -- $homeport_argv"
 
 dir=$(mktemp -d -t homeport_create.XXXXXXX)
 
@@ -28,7 +28,7 @@ function cleanup() {
 }
 
 declare argv
-argv=$(getopt --options + --long no-cache: -- "$@") || exit 1
+argv=$(getopt --options + --long no-cache -- "$@") || exit 1
 eval "set -- $argv"
 
 while true; do
@@ -50,7 +50,6 @@ mkdir "$dir/src/" && homeport_source_tarball | \
 
 mkdir -p "$HOME/.homeport"
 
-echo $homeport_image
 cat <<EOF > "$dir/src/configuration"
 homeport_unix_user=$homeport_unix_user
 homeport_docker_hub_account=$homeport_docker_hub_account
