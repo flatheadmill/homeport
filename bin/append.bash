@@ -16,7 +16,7 @@ usage
 
 homeport_emit_evaluated "$@" && exit
 homeport_get_hops_and_tag "$@"
-set -- $homeport_argv
+eval "set -- $homeport_argv"
 
 trap cleanup EXIT SIGTERM SIGINT
 
