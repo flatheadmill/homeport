@@ -129,3 +129,18 @@ homeport append ./formula/tidy
 ```
 
 And so on.
+
+## Simplier Home Directories
+
+The best part is that your homeport home directory is your home directory, I
+mean, wouldn't that be nice? Or would it. Imagine an option to, instead of using
+a volume, to use your home directory. Now you can run docker specifying the
+files in your home directory as mounted volumes. What if you're on a CoreOS
+machine, do you really want to litter core's home directory? Yeah, why not?
+
+Yeah, but really? Okay. Well, what about using a lot of NFS? You could serve the
+home directories from Docker, then if you wanted to create a volume from within
+your docker instance, you could mount the home directories somewhere on the
+host, translate the path.
+
+Okay, these are not simpiler. This is an unsimple thing.
