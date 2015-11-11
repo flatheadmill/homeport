@@ -4,10 +4,10 @@ set -e
 
 case "$OSTYPE" in
     darwin* )
-        HOMEPORT_OS=OSX
+        homeport_host_os=OSX
         ;;
     linux* )
-        HOMEPORT_OS=Linux
+        homeport_host_os=Linux
         ;;
     * )
         abend "Homeport will only run on OS X or Linux."
@@ -22,7 +22,7 @@ fi
 
 function homeport_readlink() {
     file=$1
-    if [ "$HOMEPORT_OS" = "OSX" ]; then
+    if [ "$homeport_host_os" = "OSX" ]; then
         if [ -L "$file" ]; then
             readlink $1
         else

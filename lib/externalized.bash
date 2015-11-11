@@ -43,7 +43,7 @@ function homeport_exec() {
     export homeport_path homeport_docker_hub_account homeport_unix_user \
         homeport_tag homeport_image homeport_unix_user \
         homeport_home_container homeport_evaluated homeport_container \
-        homeport_formula_path
+        homeport_formula_path homeport_host_os
     export homeport_command_path="$action" homeport_namespace
     export -f getopt usage abend homeport \
         homeport_exec homeport_emit_evaluated homeport_emit_evaluated_variable \
@@ -61,11 +61,14 @@ function homeport_emit_evaluated_variable() {
 
 function homeport_emit_evaluated() {
     if [ "$homeport_evaluated" -eq 1 ]; then
+        # todo: is this all necessary?
+        # todo: is this at all necessary?
         homeport_emit_evaluated_variable homeport_unix_user
         homeport_emit_evaluated_variable homeport_namespace
         homeport_emit_evaluated_variable homeport_tag
         homeport_emit_evaluated_variable homeport_image_name
         homeport_emit_evaluated_variable hoemport_home_container
+        homeport_emit_evaluated_variable homeport_host_os
         printf -v vargs '%q ' "$@"
         echo ''
         echo 'eval set -- '$vargs

@@ -7,6 +7,13 @@ for i in "${excludes[@]}"; do
     exclude[$i]=1
 done
 
+uid=$1
+shift
+gid=$1
+shift
+
+/etc/init.d/rsyslog start
+
 while read -r line; do
     name=${line%%=*}
     if [ "${exclude[$name]}" != "1" ]; then
@@ -19,5 +26,8 @@ cat /etc/environment
 if [ $# -ne 0 ]; then
     eval "$@"
 fi
+
+echo bindfs --map=$uid/homeport:@$gid/@homeport /var/lib/homeport/home /home/homeport
+bindfs --map=$uid/homeport:@$gid/@homeport /var/lib/homeport/home /home/homeport
 
 /usr/sbin/sshd -D

@@ -61,20 +61,30 @@ while true; do
     esac
 done
 
+homeport_home="$HOME:/var/lib/homeport/home:rw"
+
+if [ "$homeport_host_os" = "OSX" ]; then
+    homeport_host_uid=1000
+    homeport_host_gid=50
+else
+    homeport_host_uid=$(id -u)
+    homeport_host_gid=$(id -u)
+fi
+
 while read -r line; do
     exclude+="${line%%=*}="
-done < <(docker run --volumes-from $homeport_home_container --rm $homeport_image bash -c 'printenv')
+done < <(docker run -v "$homeport_home" --rm $homeport_image bash -c 'printenv')
 
 docker='docker run '
-docker+='-P -d '
+docker+='-P -d --privileged '
 docker+='--name '$homeport_container' '
-docker+='--volumes-from '$homeport_home_container' '
+docker+='-v '$homeport_home' '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options
 docker+=$homeport_image' '
 
 docker+='/usr/share/homeport/container/sshd '
-docker+=$(printf %q $exclude)
+docker+=$(printf %q $exclude)" $homeport_host_uid $homeport_host_gid"
 
 if [ $# -ne 0 ]; then
     printf -v sshd_execute ' %q' "$@"
