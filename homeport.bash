@@ -49,7 +49,7 @@ pushd "${homeport_file%/*}" > /dev/null
 homeport_path=$(pwd)
 popd > /dev/null
 
-source "$homeport_path/lib/functions.bash"
+source "$homeport_path/lib/common.bash"
 source "$homeport_path/lib/externalized.bash"
 source "$homeport_path/lib/getopt.bash"
 

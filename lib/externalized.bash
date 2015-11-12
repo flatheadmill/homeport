@@ -73,7 +73,7 @@ function homeport_emit_evaluated() {
         echo ''
         echo 'eval set -- '$vargs
         echo ''
-        cat "$homeport_path/lib/functions.bash"
+        cat "$homeport_path/lib/common.bash"
         echo ''
         cat "$homeport_path/lib/containerized.bash"
         echo ''
