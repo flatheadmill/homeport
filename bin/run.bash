@@ -78,6 +78,7 @@ done < <(docker run -v "$homeport_home" --rm $homeport_image bash -c 'printenv')
 docker='docker run '
 docker+='-P -d --privileged '
 docker+='--name '$homeport_container' '
+docker+='--label io.homeport=true '
 docker+='-v '$homeport_home' '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options

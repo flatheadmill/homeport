@@ -69,6 +69,7 @@ RUN apt-get update && \
 COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/foundation
 EXPOSE 22
+LABEL io.homeport true
 EOF
 
 docker build $docker_options -t $homeport_image "$dir"
