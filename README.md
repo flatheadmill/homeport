@@ -242,4 +242,12 @@ $ docker run hello-world
  * If there is some hard and fast shobboleth, break it. Candy falls out.
  * `ssh` does 80% (or more) of everything you'd ever need from the network.
  * `printf -v var '%q'` is how you do a level of indirection.
- * evaluate bash as a script instead of piping, you get to use arguments.
+ * evaluate bash as a script using `-c` instead of piping, you get to use arguments.
+
+What do we get for breaking the rules?
+
+ * Add some daemons, like `rsyslog` and `bindfs` to make life easier.
+ * Docker terminals intercept ctl+p which is vital to bash.
+ * In Docker bash output new lines are crlf.
+ * Forwarding your SSH agent is as big a chore as they come, bigger than
+ forwarding docker itself.
