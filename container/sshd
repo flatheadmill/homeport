@@ -29,5 +29,6 @@ fi
 
 echo bindfs --map=$uid/homeport:@$gid/@homeport /var/lib/homeport/home /home/homeport
 bindfs --map=$uid/homeport:@$gid/@homeport /var/lib/homeport/home /home/homeport
+bindfs --map=$uid/homeport:@$gid/@homeport /var/lib/homeport/certs /home/homeport/.homeport/certs
 
 /usr/sbin/sshd -D
