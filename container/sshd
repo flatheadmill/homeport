@@ -7,10 +7,46 @@ for i in "${excludes[@]}"; do
     exclude[$i]=1
 done
 
-uid=$1
-shift
-gid=$1
-shift
+home_uid=$(ls -ln /home/homeport/.homeport/touch | awk '{ print $3 }')
+home_gid=$(ls -ln /home/homeport/.homeport/touch | awk '{ print $4 }')
+
+homeport_uid_gid=$(awk -F ':' '$1 ~ "homeport" { print $3 ":" $4 }' /etc/passwd)
+
+homeport_gid=${homeport_uid_gid#*:}
+if [ "$homeport_gid" != "$home_gid" ]; then
+    group=$(awk -v gid=$home_gid -F ':' '$3 == gid { print $1 }' /etc/group)
+    if [ ! -z "$group" ]; then
+        next_gid=799
+        found=yes
+        while [ ! -z "$found" ]; do
+            let next_gid=next_gid+1
+            found=$(awk -v gid=$next_gid -F : '$3 == gid { print $1 }' /etc/group)
+        done
+        groupmod -g $next_gid $group
+    fi
+    groupmod -g $home_gid homeport
+    find / -path /home/homeport -prune -o -group $homeport_gid -exec chgrp -h $home_gid {} \;
+fi
+
+homeport_uid=${homeport_uid_gid%:*}
+if [ "$homeport_uid" != "$home_uid" ]; then
+    user=$(awk -v uid=$home_uid -F ':' '$3 == uid { print $1 }' /etc/passwd)
+    if [ ! -z "$user" ]; then
+        next_uid=799
+        found=yes
+        while [ ! -z "$found" ]; do
+            let next_uid=next_uid+1
+            found=$(awk -v uid=$next_uid -F : '$3 == uid { print $1 }' /etc/passwd)
+        done
+        usermod -u $next_uid $user
+    fi
+    mkdir /tmp/home
+    usermod -d /tmp/home homeport
+    usermod -u $home_uid homeport
+    usermod -d /home/homeport homeport
+    rmdir /tmp/home
+    find / -path /home/homeport -prune -o -user $homeport_uid -exec chown -h $home_uid {} \;
+fi
 
 /etc/init.d/rsyslog start
 
@@ -26,8 +62,5 @@ cat /etc/environment
 if [ $# -ne 0 ]; then
     eval "$@"
 fi
-
-echo bindfs --map=$uid/homeport:@$gid/@homeport /var/lib/homeport/home /home/homeport
-bindfs --map=$uid/homeport:@$gid/@homeport /var/lib/homeport/home /home/homeport
 
 /usr/sbin/sshd -D

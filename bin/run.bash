@@ -61,15 +61,11 @@ while true; do
     esac
 done
 
-homeport_home="$HOME:/var/lib/homeport/home:rw"
+homeport_home="$HOME:/home/homeport:rw"
 
-if [ "$homeport_host_os" = "OSX" ]; then
-    homeport_host_uid=1000
-    homeport_host_gid=50
-else
-    homeport_host_uid=$(id -u)
-    homeport_host_gid=$(id -u)
-fi
+mkdir -p "$HOME/.homeport"
+rm -f "$HOME/.homeport/touch"
+touch "$HOME/.homeport/touch"
 
 while read -r line; do
     exclude+="${line%%=*}="
@@ -85,7 +81,7 @@ docker+=$docker_options
 docker+=$homeport_image' '
 
 docker+='/usr/share/homeport/container/sshd '
-docker+=$(printf %q $exclude)" $homeport_host_uid $homeport_host_gid"
+docker+=$(printf %q $exclude)
 
 if [ $# -ne 0 ]; then
     printf -v sshd_execute ' %q' "$@"
