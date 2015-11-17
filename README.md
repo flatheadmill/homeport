@@ -1,5 +1,5 @@
 [![Stories in Ready](https://badge.waffle.io/bigeasy/homeport.png?label=ready&title=Ready)](https://waffle.io/bigeasy/homeport)
-# Homeport v1.0.3
+# Homeport v1.0.4
 
 *TK: Undocumented hotness: `ssh` and `rsync` hopping, image flattening, X
 Windows, Apple Share.*
