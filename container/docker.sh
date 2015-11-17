@@ -23,7 +23,7 @@ fixup_volume() {
     host_dir=$host
     while [ "/home/homeport" != "$host_dir"  ]; do
         host_dir=${host_dir%/*}
-        [ -z "$host_dir" ] && abend "Volumes be a child of host home directory."
+        [ -z "$host_dir" ] && { echo "Volumes be a child of host home directory. $volume" 1>&2; exit 1; }
     done
     echo "--volume=$HOMEPORT_HOST_HOME/${host#/home/homeport/}$rest"
 }
