@@ -205,6 +205,19 @@ $ open $(homeport share apple)
 
 You should now be looking at your home directory in Finder.
 
+## Docker Machine Suggestions
+
+I use Docker Machine (formerly Boot2docker) on my MacBook. Docker Machine
+creates a Linux in VirtualBox to host Docker. That virtual machine it creates to
+host Linux is modest. I find that I run out of space pretty quckly with the
+default settings.
+
+I use custom settings to create a larger Docker Machine Linux image.
+
+```
+docker-machine create -d virtualbox --virtualbox-memory 2048 --virtualbox-disk-size 50000
+```
+
 ## Hacking
 
 Notes to self, installing Vagrant to install Ubuntu.
