@@ -215,7 +215,8 @@ default settings.
 I use custom settings to create a larger Docker Machine Linux image.
 
 ```
-docker-machine create -d virtualbox --virtualbox-memory 2048 --virtualbox-disk-size 50000
+docker-machine create -d virtualbox --virtualbox-memory 2048 --virtualbox-disk-size 50000 dev
+docker-machine start dev
 ```
 
 ## Hacking
