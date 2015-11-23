@@ -58,7 +58,6 @@ if [ $# -ne 0 ]; then
     if [ "$1" = "run" ]; then
         docker+=' '$(printf %q "$1")
         shift
-        echo $docker
         while [ $# -ne 0 ]; do
             case "$1" in
                 --detach=* | --disble-content-trust=* | --help=* | --interactive=* | \
