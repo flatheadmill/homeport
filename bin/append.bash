@@ -28,7 +28,6 @@ function cleanup() {
 
 dir=$(mktemp -d -t homeport_append.XXXXXXX)
 
-#{ homeport_source_tarball | (mkdir "$dir/src" && cd "$dir/src" && tar xvf -); } || abend "cannot create source archive"
 mkdir -p "$dir/src"
 { (homeport_source_tarball || echo '\0') | \
     (cd "$dir/src" && tar xf -); } || abend "cannot create source archive"
