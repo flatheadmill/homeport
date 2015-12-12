@@ -17,4 +17,4 @@ function cleanup() {
     [ -n "$pids" ] && kill $pids
 }
 
-echo docker ps --filter label=io.homeport "$@"
+docker ps --filter label=io.homeport "$@"
