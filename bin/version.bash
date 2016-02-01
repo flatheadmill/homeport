@@ -12,4 +12,4 @@ usage
 
 homeport_emit_evaluated && exit
 
-echo "1.0.6-pre"
+echo "1.0.6"
