@@ -25,7 +25,7 @@ fi
 docker cp "$homeport_container":/etc/ssh/ssh_host_rsa_key.pub "$dir"
 
 if [ -z "$DOCKER_HOST" ]; then
-    ssh_host=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$homeport_container")
+    ssh_host=$(docker inspect --format '{{(index (index .NetworkSettings.Ports "22/tcp") 0).HostIp}}' "$homeport_container")
 else
     ssh_host=$(echo "$DOCKER_HOST" | sed 's/^tcp:\/\/\(.*\):.*$/\1/')
 fi

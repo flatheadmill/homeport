@@ -19,10 +19,14 @@ function cleanup() {
 
 ssh_options=''
 docker_options='-v /usr/local/bin/docker:/var/lib/homeport/bin/docker:rw '
-docker_options+='-v '$(printf %q "$DOCKER_CERT_PATH:/var/lib/homeport/etc/certs:ro")' '
-docker_options+='-e DOCKER_CERT_PATH=/var/lib/homeport/etc/certs '
-docker_options+='-e DOCKER_TLS_VERIFY=1 '
-docker_options+='-e DOCKER_HOST='$(printf %q "$DOCKER_HOST")' '
+if [ -e "$DOCKER_CERT_PATH" ]; then
+    docker_options+='-v '$(printf %q "$DOCKER_CERT_PATH:/var/lib/homeport/etc/certs:ro")' '
+    docker_options+='-e DOCKER_CERT_PATH=/var/lib/homeport/etc/certs '
+    docker_options+='-e DOCKER_TLS_VERIFY=1 '
+fi
+if [ -e "$DOCKER_HOST" ]; then
+    docker_options+='-e DOCKER_HOST='$(printf %q "$DOCKER_HOST")' '
+fi
 
 declare argv
 argv=$(getopt --options +e:v:p:A --long home:,label:,privileged,docker,volumes-from:,link: -- "$@") || exit 1
