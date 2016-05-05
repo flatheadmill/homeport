@@ -8,7 +8,6 @@ usage
 
 # TODO Do you add hops to these global commands?
 homeport_emit_evaluated "$@" && exit
-eval "set -- $homeport_argv"
 
 trap cleanup EXIT SIGTERM SIGINT
 
