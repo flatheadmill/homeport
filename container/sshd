@@ -60,8 +60,6 @@ if [ "$homeport_uid" != "$home_uid" ]; then
     find / -path /home/homeport -prune -o -user $homeport_uid -exec chown -h $home_uid {} \;
 fi
 
-/etc/init.d/rsyslog start
-
 while read -r line; do
     name=${line%%=*}
     if [ "${exclude[$name]}" != "1" ]; then
@@ -75,4 +73,4 @@ if [ $# -ne 0 ]; then
     eval "$@"
 fi
 
-/usr/sbin/sshd -D
+/usr/sbin/sshd -D -E /var/log/sshd.log
