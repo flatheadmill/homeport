@@ -10,8 +10,6 @@ source /etc/homeport/configuration
 /usr/sbin/groupadd --gid 701 homeport
 /usr/sbin/useradd --gid 701 --uid 701 homeport
 
-echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
 mkdir -p /home/homeport
 mkdir -p /var/run/sshd
 
