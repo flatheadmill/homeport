@@ -7,13 +7,25 @@ for i in "${excludes[@]}"; do
     exclude[$i]=1
 done
 
-home_uid=$(ls -ln /home/homeport/.homeport/touch | awk '{ print $3 }')
-home_gid=$(ls -ln /home/homeport/.homeport/touch | awk '{ print $4 }')
+# We need to update the image so that the uid and gid of any files owned by the
+# homeport user matches the uid and gid of the user running Homeport.
+#
+# This is an expensive, but not a lot of work. There are few if any files that
+# belong to the homeport user outside of the mounted home directory.
+
+# We `su` to the `homeport` user for OS X native Docker. The filesystem that
+# mounts the host directory will report that the UID and GID of of the mounted
+# files is that of the current user. We are currently root, but we need to be
+# Homeport.
+#
+# Note that this means that we don't have to perform the search on OS X native.
+home_uid=$(su homeport -c 'ls -ln /home/homeport/.homeport/touch' | awk '{ print $3 }')
+home_gid=$(su homeport -c 'ls -ln /home/homeport/.homeport/touch' | awk '{ print $4 }')
 
 homeport_uid_gid=$(awk -F ':' '$1 ~ "homeport" { print $3 ":" $4 }' /etc/passwd)
 
 homeport_gid=${homeport_uid_gid#*:}
-if [ "$homeport_gid" != "$home_gid" ]; then
+if [ "$home_gid" != "0" -a "$homeport_gid" != "$home_gid" ]; then
     group=$(awk -v gid=$home_gid -F ':' '$3 == gid { print $1 }' /etc/group)
     if [ ! -z "$group" ]; then
         next_gid=799
