@@ -18,7 +18,7 @@ function cleanup() {
 }
 
 ssh_options=''
-docker_options='-v /usr/local/bin/docker:/var/lib/homeport/bin/docker:rw '
+#docker_options='-v /usr/local/bin/docker:/var/lib/homeport/bin/docker:rw '
 if [ -e "$DOCKER_CERT_PATH" ]; then
     docker_options+='-v '$(printf %q "$DOCKER_CERT_PATH:/var/lib/homeport/etc/certs:ro")' '
     docker_options+='-e DOCKER_CERT_PATH=/var/lib/homeport/etc/certs '
