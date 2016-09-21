@@ -80,8 +80,10 @@ while true; do
             ;;
         -A)
             ssh_options+="$1"' '
-            docker_options+='-v $(readlink -f $SSH_AUTH_SOCK):/home/'$homeport_unix_user/.ssh-agent' '
-            docker_options+='-e SSH_AUTH_SOCK=/home/'$homeport_unix_user'/.ssh-agent '
+            if [ ! -z "$DOCKER_MACHINE_NAME" ]; then
+                docker_options+='-v $(readlink -f $SSH_AUTH_SOCK):/home/'$homeport_unix_user/.ssh-agent' '
+                docker_options+='-e SSH_AUTH_SOCK=/home/'$homeport_unix_user'/.ssh-agent '
+            fi
             shift
             ;;
         --)
