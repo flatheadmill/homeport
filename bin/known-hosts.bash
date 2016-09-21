@@ -31,4 +31,8 @@ else
 fi
 ssh_port=$(docker port $homeport_container 22 | cut -d: -f2)
 
+if [ "$ssh_host" = "0.0.0.0" ]; then
+    ssh_host=127.0.0.1
+fi
+
 echo "[$ssh_host]:$ssh_port $(cut -d' ' -f1,2 < $dir/ssh_host_rsa_key.pub)"
