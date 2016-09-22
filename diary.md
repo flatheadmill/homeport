@@ -144,3 +144,17 @@ your docker instance, you could mount the home directories somewhere on the
 host, translate the path.
 
 Okay, these are not simpiler. This is an unsimple thing.
+
+## Kubernetes
+
+It would be nice to have this run in Kubernetes so that the containers in
+Kubernetes can be entered via teleport, but the home directories would be
+missing, so you're going to want to use and ssh configuration that puts the
+user's ssh credentials somewhere other than the home directory.
+
+Remember that the essence of Homeport is that it is a container that run a
+terminal server, which is valuable in and of itself, even if you can't mount a
+local home directory.
+
+If you use `exec` instead of `run` for credential discovery, then you can use
+`kubectl` exec to work with Kubernetes.
