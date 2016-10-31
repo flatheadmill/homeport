@@ -57,5 +57,5 @@ RUN /usr/share/homeport/container/import
 EOF
 
 docker build -t $homeport_image:_intermediate "$dir"
-docker tag -f $homeport_image:_intermediate $homeport_image:latest
+docker tag $homeport_image:_intermediate $homeport_image:latest
 docker rmi $homeport_image:_intermediate
