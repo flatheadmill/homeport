@@ -19,8 +19,8 @@ done
 # Homeport.
 #
 # Note that this means that we don't have to perform the search on OS X native.
-home_uid=$(su homeport -c 'ls -ln /home/homeport/.homeport/touch' | awk '{ print $3 }')
-home_gid=$(su homeport -c 'ls -ln /home/homeport/.homeport/touch' | awk '{ print $4 }')
+home_uid=`(su homeport -c 'ls -ln /home/homeport/.homeport/touch' || ls -ln /home/homeport/.homeport/touch) 2>/dev/null | awk '{ print $3 }'`
+home_gid=`(su homeport -c 'ls -ln /home/homeport/.homeport/touch' || ls -ln /home/homeport/.homeport/touch) 2>/dev/null | awk '{ print $4 }'`
 
 homeport_uid_gid=$(awk -F ':' '$1 ~ "homeport" { print $3 ":" $4 }' /etc/passwd)
 
