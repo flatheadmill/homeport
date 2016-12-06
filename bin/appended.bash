@@ -25,4 +25,4 @@ argv=$(getopt --options +a: --long archive: -- "$@") || abend "cannot parse"
 eval "set -- $argv"
 
 
-docker run --rm $homeport_image:latest /bin/bash -c 'ls /var/lib/homeport/appended/*/invocation | sort -t / -k 4 -n | xargs cat | sed "''s,\(formula/[^/]*\)/install,\1,''"'
+docker run --rm $homeport_image:latest /bin/bash -c '[ -d /var/lib/homeport ] && (ls /var/lib/homeport/appended/*/invocation | sort -t / -k 4 -n | xargs cat | sed "''s,\(formula/[^/]*\)/install,\1,''")'
