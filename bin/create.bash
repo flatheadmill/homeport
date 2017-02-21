@@ -59,8 +59,6 @@ EOF
 cat <<EOF > "$dir/Dockerfile"
 FROM ubuntu
 
-MAINTAINER Alan Gutierrez, alan@prettyrobots.com
-
 RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs
 
 COPY ./src/ /usr/share/homeport/

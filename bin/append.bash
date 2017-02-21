@@ -70,8 +70,6 @@ echo "$invocation" >> "$dir/src/append/invocation"
 cat <<EOF > "$dir/Dockerfile"
 FROM $homeport_image:latest
 
-MAINTAINER Alan Gutierrez, alan@prettyrobots.com
-
 COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/install /usr/share/homeport/append
 EOF
