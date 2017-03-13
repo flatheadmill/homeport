@@ -15,7 +15,7 @@ are independent of your personal data.
 
 Homeport is a great way to do dependency management. It avoids cluttering your
 workstation with package utilities, locally running servers, and version
-switchers. You can keep your Homebrew to a minimimum. You can do without a
+switchers. You can keep your Homebrew to a minimum. You can do without a
 locally running `mysql` and `memcached`. You can skip `rvm` all together.
 
 You can design for containerization of your application at the outset, by
@@ -253,7 +253,7 @@ $ docker run hello-world
 
 ## Whad we learn?
 
- * If there is some hard and fast shobboleth, break it. Candy falls out.
+ * If there is some hard and fast shibboleth, break it. Candy falls out.
  * `ssh` does 80% (or more) of everything you'd ever need from the network.
  * `printf -v var '%q'` is how you do a level of indirection.
  * evaluate bash as a script using `-c` instead of piping, you get to use arguments.
