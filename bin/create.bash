@@ -58,9 +58,7 @@ EOF
 
 cat <<EOF > "$dir/Dockerfile"
 FROM ubuntu
-
-RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs
-
+RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs sudo
 COPY ./src/ /usr/share/homeport/
 RUN /usr/share/homeport/container/foundation
 EXPOSE 22

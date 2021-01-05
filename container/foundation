@@ -13,6 +13,8 @@ source /etc/homeport/configuration
 mkdir -p /home/homeport
 mkdir -p /var/run/sshd
 
+echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 ln -s /usr/share/homeport/container/docker.sh /usr/local/bin/docker
 
 sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd

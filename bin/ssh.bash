@@ -27,4 +27,6 @@ function cleanup() {
 
 homeport_ssh_config "$dir"
 
+cat "$dir/config"
+
 ssh -F "$dir/config" -l homeport "${destination[0]}" "$@"

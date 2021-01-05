@@ -73,7 +73,7 @@ while true; do
             docker_options+=$(printf %q "$1")' '
             shift
             ;;
-        -e | -v | -p | --volumes-from | --link | --label)
+        -e | -v | -p | --volumes-from | --link | --label | --mount)
             docker_options+=$(printf %q "$1")' '$(printf %q "$2")' '
             shift
             shift
@@ -108,7 +108,8 @@ docker+='-e HOMEPORT_HOST_HOME='$homeport_home' '
 docker+='-P -d --privileged '
 docker+='--name '$homeport_container' '
 docker+='--label io.homeport=true '
-docker+='-v '$homeport_home_volume' '
+docker+='--mount source=homeport-home,destination=/home/homeport '
+docker+='--mount type=bind,source='$(printf %q "$HOME")'/.ssh,destination=/home/homeport/.ssh,readonly '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options
 docker+=$homeport_image' '
