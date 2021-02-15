@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+/usr/sbin/groupadd --gid 701 homeport
+/usr/sbin/useradd --shell /bin/ash --gid 701 --uid 701 homeport
+
+cat <<EOF >  /etc/ssh/sshd_config
+AuthorizedKeysFile	.ssh/authorized_keys
+PasswordAuthentication no
+UsePAM yes
+AllowTcpForwarding no
+GatewayPorts no
+X11Forwarding no
+Subsystem	sftp	/usr/lib/ssh/sftp-server
+EOF
+
+ln -s /usr/share/homeport/container/docker.sh /usr/local/bin/docker
+
+echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+mkdir -p /home/homeport
+mkdir -p /var/run/sshd
