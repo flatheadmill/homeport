@@ -20,6 +20,14 @@ locally running `mysql` and `memcached`. You can skip `rvm` all together.
 You can design for containerization of your application at the outset, by
 containerizing the development enviornment.
 
+## Caveats
+
+Homeport broke with a [regression to function
+exports](https://stackoverflow.com/a/60565032/90123) that didn't like
+`getopt.bash` in Bash 5.0 which was patched by at least Bash 5.1. It won't work
+with container distros that use Bash 5.0 such as Ubuntu Focal. Rather than try
+to work around this bug I'm going to do the right thing and ignore it.
+
 ## Contributing
 
 If you have suggestions, or general questions, please place them in [milestone
