@@ -29,7 +29,7 @@ if [ -e "$DOCKER_HOST" ]; then
 fi
 
 declare argv
-argv=$(getopt --options +e:v:p:A --long home:,label:,privileged,docker,volumes-from:,link: -- "$@") || exit 1
+argv=$(getopt --options +e:v:p:A --long mount:,net:,home:,label:,privileged,docker,volumes-from:,link: -- "$@") || exit 1
 eval "set -- $argv"
 
 docker_rm=1 named=0 daemonize=0
@@ -73,7 +73,7 @@ while true; do
             docker_options+=$(printf %q "$1")' '
             shift
             ;;
-        -e | -v | -p | --volumes-from | --link | --label | --mount)
+        -e | -v | -p | --volumes-from | --link | --label | --mount | --net)
             docker_options+=$(printf %q "$1")' '$(printf %q "$2")' '
             shift
             shift
@@ -109,7 +109,7 @@ docker+='-P -d --privileged '
 docker+='--name '$homeport_container' '
 docker+='--label io.homeport=true '
 docker+='--mount source=homeport-home,destination=/home/homeport '
-docker+='--mount type=bind,source='$(printf %q "$HOME")'/.ssh,destination=/home/homeport/.ssh,readonly '
+docker+='--mount type=bind,source='$(printf %q "$HOME")'/.ssh,destination=/home/homeport/.ssh '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options
 docker+=$homeport_image' '

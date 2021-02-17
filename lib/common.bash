@@ -98,6 +98,7 @@ function homeport_ssh_config() {
     fi
 
     homeport_known_hosts=$(homeport_evaluatable known-hosts $homeport_tag | $fetch bash 2> /dev/null)
+    echo ">>>> $homeport_known_hosts"
 
     IFS=: read -ra destination <<< "$(echo "$homeport_known_hosts" | sed 's/\[\([0-9.]*\)\]:\([0-9]*\).*/\1:\2/')"
     echo "$homeport_known_hosts" > "$dir/known_hosts"

@@ -1,8 +1,7 @@
 [![Stories in Ready](https://badge.waffle.io/bigeasy/homeport.png?label=ready&title=Ready)](https://waffle.io/bigeasy/homeport)
 # Homeport v1.0.5
 
-*TK: Undocumented hotness: `ssh` and `rsync` hopping, image flattening, X
-Windows, Apple Share.*
+**TODO**: `ssh` and `rsync` hopping, X Windows.
 
 Homeport is a Dockerized Linux development environment. It creates Dockerized
 shell environments that you can run anywhere that Docker runs. They are

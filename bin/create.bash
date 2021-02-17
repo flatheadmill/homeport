@@ -56,6 +56,12 @@ homeport_docker_hub_account=$homeport_docker_hub_account
 homeport_image=$homeport_image
 EOF
 
+cat <<EOF
+homeport_unix_user=$homeport_unix_user
+homeport_docker_hub_account=$homeport_docker_hub_account
+homeport_image=$homeport_image
+EOF
+
 cat <<EOF > "$dir/Dockerfile"
 FROM ubuntu
 RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs sudo
@@ -65,4 +71,4 @@ EXPOSE 22
 LABEL io.homeport true
 EOF
 
-docker build $docker_options -t $homeport_image "$dir"
+echo docker build $docker_options -t $homeport_image "$dir"

@@ -1,0 +1,7 @@
+FROM alpine
+RUN apk update && apk add sudo openssh bash shadow openssh-server-pam
+COPY --from=homeport:homeport /usr/share/homeport/ /usr/share/homeport/
+RUN cat /etc/os-release
+RUN /usr/share/homeport/container/alpine
+EXPOSE 22
+LABEL io.homeport true

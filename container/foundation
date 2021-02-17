@@ -3,12 +3,18 @@
 set -e
 
 mkdir /etc/homeport
-mv /usr/share/homeport/configuration /etc/homeport/
+#mv /usr/share/homeport/configuration /etc/homeport/
 
-source /etc/homeport/configuration
+#source /etc/homeport/configuration
 
-/usr/sbin/groupadd --gid 701 homeport
-/usr/sbin/useradd --gid 701 --uid 701 homeport
+#if [ -e /etc/os-release -a false ]; then
+#    addgroup -S homeport && adduser -S homeport -G homeport
+#else
+    /usr/sbin/groupadd --gid 701 homeport
+    /usr/sbin/useradd --shell /bin/bash --gid 701 --uid 701 homeport
+#fi
+
+cat /etc/passwd
 
 mkdir -p /home/homeport
 mkdir -p /var/run/sshd
@@ -17,4 +23,4 @@ echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ln -s /usr/share/homeport/container/docker.sh /usr/local/bin/docker
 
-sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+#sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
