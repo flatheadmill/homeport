@@ -1,10 +1,8 @@
-#!/bin/bash
-
 getopt() {
   # pure-getopt, a drop-in replacement for GNU getopt in pure Bash.
-  # version 1.4
+  # version 1.4.5
   #
-  # Copyright 2012 Aron Griffis <aron@arongriffis.com>
+  # Copyright 2012-2021 Aron Griffis <aron@scampersand.com>
   #
   # Permission is hereby granted, free of charge, to any person obtaining
   # a copy of this software and associated documentation files (the
@@ -13,10 +11,10 @@ getopt() {
   # distribute, sublicense, and/or sell copies of the Software, and to
   # permit persons to whom the Software is furnished to do so, subject to
   # the following conditions:
-  # 
+  #
   # The above copyright notice and this permission notice shall be included
   # in all copies or substantial portions of the Software.
-  # 
+  #
   # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
   # OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
   # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -37,7 +35,7 @@ getopt() {
     # "options -- parameters" on stdout.
 
     declare parsed status
-    declare short long name flags
+    declare short long='' name flags=''
     declare have_short=false
 
     # Synopsis from getopt man-page:
@@ -60,12 +58,12 @@ getopt() {
     # First parse always uses flags=p since getopt always parses its own
     # arguments effectively in this mode.
     parsed=$(_getopt_parse getopt ahl:n:o:qQs:TuV \
-      alternative,help,longoptions:,name,options:,quiet,quiet-output,shell:,test,version \
+      alternative,help,longoptions:,name:,options:,quiet,quiet-output,shell:,test,version \
       p "$@")
     status=$?
     if [[ $status != 0 ]]; then
       if [[ $status == 1 ]]; then
-        echo "Try \`getopt --help' for more information." >&2
+        echo "Try 'getopt --help' for more information." >&2
         # Since this is the first parse, convert status 1 to 2
         status=2
       fi
@@ -80,8 +78,8 @@ getopt() {
 
         (-h|--help)
           _getopt_help
-          return 2  # as does GNU getopt
-          ;; 
+          return 0
+          ;;
 
         (-l|--longoptions)
           long="$long${long:+,}$2"
@@ -110,7 +108,7 @@ getopt() {
               flags=t$flags ;;
             (*)
               echo 'getopt: unknown shell after -s or --shell argument' >&2
-              echo "Try \`getopt --help' for more information." >&2
+              echo "Try 'getopt --help' for more information." >&2
               return 2 ;;
           esac
           shift ;;
@@ -122,7 +120,7 @@ getopt() {
           return 4 ;;
 
         (-V|--version)
-          echo "pure-getopt 1.4"
+          echo "pure-getopt 1.4.4"
           return 0 ;;
 
         (--)
@@ -138,7 +136,7 @@ getopt() {
       # This implies the second form in the synopsis.
       if [[ $# == 0 ]]; then
         echo 'getopt: missing optstring argument' >&2
-        echo "Try \`getopt --help' for more information." >&2
+        echo "Try 'getopt --help' for more information." >&2
         return 2
       fi
       short=$1
@@ -149,7 +147,7 @@ getopt() {
     if [[ $short == -* ]]; then
       # Leading dash means generate output in place rather than reordering,
       # unless we're already in compatibility mode.
-      [[ $flags == *c* ]] || flags=i$flgas
+      [[ $flags == *c* ]] || flags=i$flags
       short=${short#?}
     elif [[ $short == +* ]]; then
       # Leading plus means POSIXLY_CORRECT, unless we're already in
@@ -211,14 +209,8 @@ getopt() {
           elif [[ ,"$long", == *,"${o#--}":,* ]]; then
             opts=( "${opts[@]}" "$o" "${1#*=}" )
           elif [[ ,"$long", == *,"${o#--}",* ]]; then
-            if $alt_recycled; then
-              # GNU getopt isn't self-consistent about whether it reports
-              # errors with a single dash or double dash in alternative
-              # mode, but in this case it reports with a single dash.
-              _getopt_err "$name: option '${o#-}' doesn't allow an argument"
-            else
-              _getopt_err "$name: option '$o' doesn't allow an argument"
-            fi
+            if $alt_recycled; then o=${o#-}; fi
+            _getopt_err "$name: option '$o' doesn't allow an argument"
             error=1
           else
             echo "getopt: assertion failed (1)" >&2
@@ -240,6 +232,7 @@ getopt() {
               shift
               opts=( "${opts[@]}" "$o" "$1" )
             else
+              if $alt_recycled; then o=${o#-}; fi
               _getopt_err "$name: option '$o' requires an argument"
               error=1
             fi
@@ -267,7 +260,7 @@ getopt() {
                 (0)
                   # Unambiguous match. Let the long options parser handle
                   # it, with a flag to get the right error message.
-                  set -- "-$@"
+                  set -- "-$1" "${@:2}"
                   alt_recycled=true
                   continue ;;
                 (1)
@@ -372,7 +365,7 @@ getopt() {
     # status 2.)  If there is no match at all, prints a message on stderr
     # and returns 2.
     declare a q="$1"
-    declare -a matches
+    declare -a matches=()
     shift
     for a; do
       if [[ $q == "$a" ]]; then
@@ -388,20 +381,20 @@ getopt() {
         matches=( "${matches[@]}" "$a" )
       elif [[ $flags == *a* && $q == -[^-]* && $a == -"$q"* ]]; then
         # Abbreviated alternative match.
-        matches=( "${matches[@]}" "$a" )
+        matches=( "${matches[@]}" "${a#-}" )
       fi
     done
     case ${#matches[@]} in
       (0)
         [[ $flags == *q* ]] || \
-        printf "$name: unrecognized option %s\n" >&2 \
+        printf "$name: unrecognized option %s\\n" >&2 \
           "$(_getopt_quote "$q")"
         return 2 ;;
       (1)
-        printf '%s' "$matches"; return 0 ;;
-      (*) 
+        printf '%s' "${matches[0]}"; return 0 ;;
+      (*)
         [[ $flags == *q* ]] || \
-        printf "$name: option %s is ambiguous; possibilities: %s\n" >&2 \
+        printf "$name: option %s is ambiguous; possibilities: %s\\n" >&2 \
           "$(_getopt_quote "$q")" "$(_getopt_quote "${matches[@]}")"
         return 1 ;;
     esac
@@ -415,7 +408,7 @@ getopt() {
 
   _getopt_quote() {
     # Quotes arguments with single quotes, escaping inner single quotes
-    declare s space q=\'
+    declare s space='' q=\'
     for s; do
       printf "$space'%s'" "${s//$q/$q\\$q$q}"
       space=' '
@@ -445,26 +438,30 @@ getopt() {
   }
 
   _getopt_help() {
-    cat <<-EOT >&2
-	
+    cat <<-EOT
+
 	Usage:
-	 getopt optstring parameters
-	 getopt [options] [--] optstring parameters
-	 getopt [options] -o|--options optstring [options] [--] parameters
-	
+	 getopt <optstring> <parameters>
+	 getopt [options] [--] <optstring> <parameters>
+	 getopt [options] -o|--options <optstring> [options] [--] <parameters>
+
+	Parse command options.
+
 	Options:
-	 -a, --alternative            Allow long options starting with single -
-	 -h, --help                   This small usage guide
-	 -l, --longoptions <longopts> Long options to be recognized
-	 -n, --name <progname>        The name under which errors are reported
-	 -o, --options <optstring>    Short options to be recognized
-	 -q, --quiet                  Disable error reporting by getopt(3)
-	 -Q, --quiet-output           No normal output
-	 -s, --shell <shell>          Set shell quoting conventions
-	 -T, --test                   Test for getopt(1) version
-	 -u, --unquote                Do not quote the output
-	 -V, --version                Output version information
-	
+	 -a, --alternative             allow long options starting with single -
+	 -l, --longoptions <longopts>  the long options to be recognized
+	 -n, --name <progname>         the name under which errors are reported
+	 -o, --options <optstring>     the short options to be recognized
+	 -q, --quiet                   disable error reporting by getopt(3)
+	 -Q, --quiet-output            no normal output
+	 -s, --shell <shell>           set quoting conventions to those of <shell>
+	 -T, --test                    test for getopt(1) version
+	 -u, --unquoted                do not quote the output
+
+	 -h, --help                    display this help
+	 -V, --version                 display version
+
+	For more details see getopt(1).
 	EOT
   }
 
@@ -491,5 +488,3 @@ getopt() {
     _getopt_version_check
   return $status
 }
-
-# vim:sw=2
