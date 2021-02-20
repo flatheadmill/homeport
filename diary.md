@@ -34,6 +34,9 @@ When it runs you can mount it with.
 mount_smbfs //alan@10.0.0.6/alan ./mntpoint
 ```
 
+If you get "File exists" errors use `df` to see if the share is already mounted
+and unmount it. Use `smbutil` to browse.
+
 This shares from inside the container. The objective would be to share the
 Homeport home directory volume.
 
