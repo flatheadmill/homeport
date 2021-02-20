@@ -48,6 +48,9 @@ not want to bind ports to the host, instead connect through the Docker network.
 Would tick off a box and add a feature. Some poking around for performance
 improvements might yield something.
 
+NFS inside a contianer appears to be a no go. It appears to want a kernel module
+loaded or some such, so it only works Linux on Linux.
+
 ## Legacy
 
 
