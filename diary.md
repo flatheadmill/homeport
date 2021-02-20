@@ -1,5 +1,52 @@
 # Homeport Diary
 
+## Fri Feb 19 20:23:25 CST 2021
+
+SMB works but it is slow and won't solve an immediate problems I'm facing, so
+here's where I left off. (Got it working.)
+
+```
+docker run -it -p 137:137 -p 138:138 -p 139:139 -p 445:445 --name smb  \
+docker/homeport (master +) ljubljana
+    -e USERID=0 \
+    -e GROUPID=0 \
+    -d dperson/samba -p \
+    -u "alan;password" \
+    -s "share2;/share2;no;no;no;alan" \
+-s "alan;/alan;no;no;no;alan"
+```
+
+This will get to where you can mount and look at a file. Tried transferring a
+large file and it was definately slower than `rsync`. Will confirm. If it can't
+transfer large files quickly, I don't see the point. If I get to where I want to
+quickly open something in Finder, I'll come back.
+
+The above wasn't working with `dperson/samba` from Docker Hub. I had to check it
+out of GitHub and build it myself.
+
+```
+docker build -t dperson/samba .
+```
+
+When it runs you can mount it with.
+
+```
+mount_smbfs //alan@10.0.0.6/alan ./mntpoint
+```
+
+This shares from inside the container. The objective would be to share the
+Homeport home directory volume.
+
+It would appear that you cannot use localhost to mount SMB on OS X. SMB
+automatically creates the share directories. The `USERID` and `GROUPID` of root
+are dubious, would seek to change that to the homeport `uid` and `gid`. Would
+not want to bind ports to the host, instead connect through the Docker network.
+
+Would tick off a box and add a feature. Some poking around for performance
+improvements might yield something.
+
+## Legacy
+
 
 ## Decisions
 
