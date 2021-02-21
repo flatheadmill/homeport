@@ -1,11 +1,6 @@
-FROM ubuntu
+FROM ubuntu:bionic
 RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs sudo
-COPY --from=homeport:homeport /usr/share/homeport/ /usr/share/homeport/
-RUN find /usr/share/homeport/
-RUN find /usr/share/homeport/container/foundation
-RUN ls -la /usr/share/homeport/container/foundation
-RUN printenv
-RUN cat /etc/os-release
+COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
 RUN /usr/share/homeport/container/foundation
 EXPOSE 22
 LABEL io.homeport true

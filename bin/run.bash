@@ -29,7 +29,7 @@ if [ -e "$DOCKER_HOST" ]; then
 fi
 
 declare argv
-argv=$(getopt --options +e:v:p:A --long mount:,net:,home:,label:,privileged,docker,volumes-from:,link: -- "$@") || exit 1
+argv=$(getopt --options +e:v:p:A --long mount:,ip:,net:,home:,label:,privileged,docker,volumes-from:,link: -- "$@") || exit 1
 eval "set -- $argv"
 
 docker_rm=1 named=0 daemonize=0
@@ -73,7 +73,7 @@ while true; do
             docker_options+=$(printf %q "$1")' '
             shift
             ;;
-        -e | -v | -p | --volumes-from | --link | --label | --mount | --net)
+        -e | -v | -p | --volumes-from | --link | --label | --mount | --net | --ip)
             docker_options+=$(printf %q "$1")' '$(printf %q "$2")' '
             shift
             shift
@@ -101,20 +101,20 @@ touch "$HOME/.homeport/touch"
 
 while read -r line; do
     exclude+="${line%%=*}="
-done < <(docker run -v "$homeport_home_volume" --rm $homeport_image bash -c 'printenv')
+done < <(docker run --entrypoint /bin/bash -v "$homeport_home_volume" --rm $homeport_image -c 'printenv')
 
 docker='docker run '
 docker+='-e HOMEPORT_HOST_HOME='$homeport_home' '
 docker+='-P -d --privileged '
 docker+='--name '$homeport_container' '
 docker+='--label io.homeport=true '
+docker+='--entrypoint /usr/share/homeport/container/sshd '
 docker+='--mount source=homeport-home,destination=/home/homeport '
 docker+='--mount type=bind,source='$(printf %q "$HOME")'/.ssh,destination=/home/homeport/.ssh '
 docker+='-h '$homeport_tag' '
 docker+=$docker_options
 docker+=$homeport_image' '
 
-docker+='/usr/share/homeport/container/sshd '
 docker+=$(printf %q $exclude)
 
 if [ $# -ne 0 ]; then
