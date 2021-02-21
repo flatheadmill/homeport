@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+mkdir /etc/homeport
+
+/usr/sbin/groupadd --gid 701 homeport
+/usr/sbin/useradd --shell /bin/bash --gid 701 --uid 701 homeport
+
+mkdir -p /home/homeport
+mkdir -p /var/run/sshd
+
+echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+wget -q https://download.docker.com/linux/static/stable/x86_64/docker-20.10.3.tgz
+
+tar zxvf docker-20.10.3.tgz docker/docker 2>/dev/null
+
+mv docker/docker /usr/local/bin/
