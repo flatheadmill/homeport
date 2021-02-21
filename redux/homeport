@@ -531,6 +531,52 @@ function is_homeport_container () {
     return 0
 }
 
+function echo_ubuntu_dockerfile () {
+    cat <<EOF
+FROM ubuntu:bionic
+RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs sudo
+COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
+RUN mkdir /etc/homeport && \
+    /usr/sbin/groupadd --gid 701 homeport && \
+    /usr/sbin/useradd --shell /bin/bash --gid 701 --uid 701 homeport && \
+    mkdir -p /home/homeport && \
+    mkdir -p /var/run/sshd && \
+    echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+    wget -q https://download.docker.com/linux/static/stable/x86_64/docker-20.10.3.tgz && \
+    tar zxvf docker-20.10.3.tgz docker/docker 2>/dev/null && \
+    mv docker/docker /usr/local/bin/
+EXPOSE 22
+LABEL io.homeport true
+ENTRYPOINT [ "/bin/bash" ]
+CMD [ "-c", "cat /usr/share/homeport/redux/homeport" ]
+EOF
+}
+
+function homeport_dockerfile () {
+    local argv=()
+    argv=$(getopt --options + --long no-cache,distro: -- "$@") || exit 1
+    eval "set -- $argv"
+    while true; do
+        case "$1" in
+            --distro)
+                shift
+                distro=$1
+                shift
+                ;;
+            --)
+                shift
+                break
+                ;;
+        esac
+    done
+    case "$distro" in
+        ubuntu)
+            echo_ubuntu_dockerfile
+            ;;
+    esac
+}
+
 function homeport_run () {
     local options=$(parse_options 'docker' 'run' '--help')
     local argv=()
@@ -588,10 +634,10 @@ function update_config () {
     echo "[$ssh_host]:$ssh_port $ssh_key" >> ~/.ssh/homeport/known_hosts
 
     touch ~/.ssh/homeport.config
-    sed -i.bak '/^Host '$alias'.homeport$/,/^# End Host$/d' ~/.ssh/homeport.config
+    sed -i.bak '/^Host '$alias'$/,/^# End Host$/d' ~/.ssh/homeport.config
 
     cat <<EOF >> ~/.ssh/homeport.config
-Host $alias.homeport
+Host $alias
     User homeport
     Hostname $ssh_host
     Port $ssh_port
@@ -630,6 +676,9 @@ command=$1
 shift
 
 case "$command" in
+    dockerfile)
+        homeport_dockerfile "$@"
+        ;;
     run)
         homeport_run "$@"
         ;;
