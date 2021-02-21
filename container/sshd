@@ -22,4 +22,5 @@ if [ $# -ne 0 ]; then
 fi
 
 ssh-keygen -A
+
 /usr/sbin/sshd -D -E /var/log/sshd.log

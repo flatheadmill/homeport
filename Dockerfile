@@ -1,11 +1,8 @@
-FROM ubuntu
-
-MAINTAINER Alan Gutierrez, alan@prettyrobots.com
-
-RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove
-
+FROM alpine AS pruned
 COPY . /usr/share/homeport/
 
-RUN find /usr/share/homeport
-
-ENTRYPOINT ["/bin/bash", "/usr/share/homeport/homeport.bash", "--evaluated"]
+FROM scratch
+WORKDIR /data
+COPY --from=pruned /usr/share/homeport/ /usr/share/homeport/
+VOLUME /data
+CMD [ "fake" ]
