@@ -1,5 +1,0 @@
-#!/bin/bash
-
-apt-get -y install sudo
-
-echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
