@@ -549,7 +549,7 @@ RUN mkdir /etc/homeport && \
 EXPOSE 22
 LABEL io.homeport true
 ENTRYPOINT [ "/bin/bash" ]
-CMD [ "-c", "cat /usr/share/homeport/redux/homeport" ]
+CMD [ "-c", "cat /usr/share/homeport/homeport" ]
 EOF
 }
 
