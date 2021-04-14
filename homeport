@@ -582,6 +582,12 @@ CMD [ "-c", "cat /usr/share/homeport/homeport" ]
 EOF
 }
 
+function abend () {
+    local message=$1
+    echo $message
+    exit 1
+}
+
 function homeport_dockerfile () {
     local argv=()
     argv=$(getopt --options + --long no-cache,distro: -- "$@") || exit 1
@@ -638,8 +644,23 @@ function homeport_run () {
     run_options+='--label io.homeport=true '
     run_options+='--entrypoint /usr/share/homeport/container/sshd '
     run_options+='--mount source=homeport-home,destination=/home/homeport '
-    run_options+='--mount type=bind,source='$(printf %q "$HOME")'/.ssh,destination=/home/homeport/.ssh '
+#    run_options+='--mount type=bind,source='$(printf %q "$HOME")'/.ssh,destination=/home/homeport/.ssh '
     docker $docker_options run $run_options $image HOME=
+}
+
+# https://stackoverflow.com/a/28786207/90123
+function homeport_authorize () {
+    keys=$(cat -- "${1:--}")
+    while read -r line; do
+        ssh-keygen -l -f <(echo "$line") || abend "invalid ssh key"
+    done < <(echo "$keys")
+    echo "$keys" | docker run --mount source=homeport-home,destination=/home/homeport -i --rm alpine ash -c '
+        mkdir -p /home/homeport/.ssh &&
+        touch /home/homeport/.ssh/authorized_keys &&
+        chown -R 701:701 /home/homeport/.ssh /home/homeport/.ssh/authorized_keys &&
+        chmod og-rwx /home/homeport/.ssh /home/homeport/.ssh/authorized_keys &&
+        cat - >> /home/homeport/.ssh/authorized_keys
+    '
 }
 
 function update_config () {
@@ -713,6 +734,9 @@ case "$command" in
         ;;
     run)
         homeport_run "$@"
+        ;;
+    authorize)
+        homeport_authorize "$@"
         ;;
     config)
         update_config "$@"
