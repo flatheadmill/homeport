@@ -533,7 +533,7 @@ function is_homeport_container () {
 
 function echo_ubuntu_dockerfile () {
     cat <<EOF
-FROM ubuntu:bionic
+FROM ubuntu:focal
 RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs sudo
 COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
 RUN mkdir /etc/homeport && \
