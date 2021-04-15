@@ -673,14 +673,15 @@ function update_config () {
 
     ssh_host=$(docker inspect --format '{{(index (index .NetworkSettings.Ports "22/tcp") 0).HostIp}}' "$homeport_container")
 
-    echo $ssh_host
-
     if [[ "$ssh_host" = "0.0.0.0" ]]; then
         ssh_host=127.0.0.1
     fi
 
     ssh_port=$(docker port $homeport_container 22 | cut -d: -f2)
     rsa_ssh_key=$({ docker cp $homeport_container:/etc/ssh/ssh_host_rsa_key.pub - | tar -Oxvf - ssh_host_rsa_key.pub | cut -d' ' -f1,2; } 2>/dev/null)
+
+    mkdir -p ~/.ssh/homeport
+    touch ~/.ssh/homeport/known_hosts
 
     sed -i.bak -e '/^\['$ssh_host']:'$ssh_port'/d' ~/.ssh/homeport/known_hosts
 
@@ -697,6 +698,13 @@ Host $alias
     UserKnownHostsFile ~/.ssh/homeport/known_hosts
 # End Host
 EOF
+
+    if [[ ! -e ~/.ssh/config ]] || ! grep 'Include  *~/\.ssh/homeport.config' ~/.ssh/config > /dev/null; then
+        echo 'You must add the following line to your ~/.ssh/config'
+        echo ''
+        echo 'Include ~/.ssh/homeport.config'
+        echo ''
+    fi
 }
 
 options=$(parse_options 'docker' '--help')
