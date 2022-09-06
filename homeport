@@ -537,8 +537,8 @@ FROM ubuntu:focal
 RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove && apt-get -y install openssh-server bindfs sudo
 COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
 RUN mkdir /etc/homeport && \
-    /usr/sbin/groupadd --gid 701 homeport && \
-    /usr/sbin/useradd --shell /bin/bash --gid 701 --uid 701 homeport && \
+    /usr/sbin/groupadd --gid 1983 homeport && \
+    /usr/sbin/useradd --shell /bin/bash --gid 1983 --uid 1983 homeport && \
     mkdir -p /home/homeport && \
     mkdir -p /var/run/sshd && \
     echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
@@ -558,8 +558,8 @@ function echo_alpine_dockerfile () {
 FROM alpine
 RUN apk update && apk add sudo openssh bash shadow openssh-server-pam
 COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
-RUN addgroup -g 701 homeport && \
-    adduser --shell /bin/ash --uid 701 --ingroup homeport --disabled-password homeport && \
+RUN addgroup -g 1983 homeport && \
+    adduser --shell /bin/ash --uid 1983 --ingroup homeport --disabled-password homeport && \
     printf 'AuthorizedKeysFile	.ssh/authorized_keys\n\
 PasswordAuthentication no\n\
 UsePAM yes\n\
@@ -657,7 +657,7 @@ function homeport_authorize () {
     echo "$keys" | docker run --mount source=homeport-home,destination=/home/homeport -i --rm alpine ash -c '
         mkdir -p /home/homeport/.ssh &&
         touch /home/homeport/.ssh/authorized_keys &&
-        chown -R 701:701 /home/homeport/.ssh /home/homeport/.ssh/authorized_keys &&
+        chown -R 1983:1983 /home/homeport/.ssh /home/homeport/.ssh/authorized_keys &&
         chmod og-rwx /home/homeport/.ssh /home/homeport/.ssh/authorized_keys &&
         cat - >> /home/homeport/.ssh/authorized_keys
     '
