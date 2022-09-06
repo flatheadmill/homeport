@@ -571,26 +571,20 @@ function echo_ubuntu_dockerfile () {
 # syntax=docker/dockerfile:1.3-labs
 FROM ubuntu:focal
 
+COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
+
 RUN <<EOR
 apt-get update
 apt-get -y upgrade
 apt-get -y autoremove
 apt-get -y install openssh-server bindfs sudo
-EOR
-
-COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
-
-RUN <<EOR
 mkdir /etc/homeport
-/usr/sbin/groupadd --gid 701 homeport
-/usr/sbin/useradd --shell /bin/bash --gid 701 --uid 701 homeport
+/usr/sbin/groupadd --gid 1983 homeport
+/usr/sbin/useradd --shell /bin/bash --gid 1983 --uid 1983 homeport
 mkdir -p /home/homeport
 mkdir -p /var/run/sshd
 echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-wget -q https://download.docker.com/linux/static/stable/x86_64/docker-20.10.3.tgz
-tar zxvf docker-20.10.3.tgz docker/docker 2>/dev/null
-mv docker/docker /usr/local/bin/
 EOR
 
 EXPOSE 22
