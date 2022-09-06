@@ -633,30 +633,40 @@ EOF
 
 function echo_alpine_dockerfile () {
     cat <<EOF
+# syntax=docker/dockerfile:1.3-labs
 FROM alpine
-RUN apk update && apk add sudo openssh bash shadow openssh-server-pam
+
 COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
-RUN addgroup -g 1983 homeport && \
-    adduser --shell /bin/ash --uid 1983 --ingroup homeport --disabled-password homeport && \
-    printf 'AuthorizedKeysFile	.ssh/authorized_keys\n\
-PasswordAuthentication no\n\
-UsePAM yes\n\
-AllowTcpForwarding no\n\
-GatewayPorts no\n\
-X11Forwarding no\n\
-Subsystem	sftp	/usr/lib/ssh/sftp-server\n\
-' > /etc/ssh/sshd_config && \
-    echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    mkdir -p /home/homeport && \
-    mkdir -p /var/run/sshd && \
-    wget -q https://download.docker.com/linux/static/stable/x86_64/docker-20.10.3.tgz && \
-    tar zxvf docker-20.10.3.tgz docker/docker >/dev/null && \
-    mv docker/docker /usr/local/bin/ && \
-    rm docker-20.10.3.tgz
+
+RUN <<EOR
+apk --no-progress update
+apk --no-progress add sudo openssh bash shadow openssh-server-pam
+addgroup -g 701 homeport
+adduser --shell /bin/ash --uid 701 --ingroup homeport --disabled-password homeport
+
+cat <<EOF > /etc/ssh/sshd_config
+AuthorizedKeysFile .ssh/authorized_keys
+PasswordAuthentication no
+UsePAM yes
+AllowTcpForwarding no
+GatewayPorts no
+X11Forwarding no
+Subsystem sftp /usr/lib/ssh/sftp-server
+EOSSH
+
+echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+mkdir -p /home/homeport
+mkdir -p /var/run/sshd
+wget -q https://download.docker.com/linux/static/stable/x86_64/docker-20.10.3.tgz
+tar zxvf docker-20.10.3.tgz docker/docker >/dev/null
+mv docker/docker /usr/local/bin/
+rm docker-20.10.3.tgz
+EOR
+
 EXPOSE 22
+
 LABEL io.homeport true
-ENTRYPOINT [ "/bin/bash" ]
-CMD [ "-c", "cat /usr/share/homeport/homeport" ]
 EOF
 }
 
