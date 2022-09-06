@@ -646,6 +646,9 @@ function homeport_dockerfile () {
         esac
     done
     case "$distro" in
+        fedora)
+            echo_fedora_dockerfile
+            ;;
         ubuntu)
             echo_ubuntu_dockerfile
             ;;
