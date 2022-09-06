@@ -531,6 +531,44 @@ function is_homeport_container () {
     return 0
 }
 
+function echo_archlinux_dockerfile () {
+    cat <<EOF
+# syntax=docker/dockerfile:1.3-labs
+FROM archlinux
+
+COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
+
+RUN <<EOR
+pacman-key --init
+pacman-key --populate archlinux
+pacman --noconfirm -Sy archlinux-keyring
+pacman --noconfirm -Su
+pacman --noconfirm -S openssh sudo
+groupadd -g 1983 homeport
+useradd -s /bin/bash -u 1983 -g 1983 -d /home/homeport homeport
+
+cat <<EOSSH > /etc/ssh/sshd_config
+AuthorizedKeysFile .ssh/authorized_keys
+PasswordAuthentication no
+UsePAM yes
+AllowTcpForwarding no
+GatewayPorts no
+X11Forwarding no
+Subsystem sftp /usr/lib/ssh/sftp-server
+EOSSH
+
+echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+mkdir -p /home/homeport
+mkdir -p /var/run/sshd
+EOR
+
+EXPOSE 22
+
+LABEL io.homeport true
+EOF
+}
+
 function echo_fedora_dockerfile () {
     cat <<EOF
 # syntax=docker/dockerfile:1.3-labs
@@ -646,13 +684,16 @@ function homeport_dockerfile () {
         esac
     done
     case "$distro" in
-        fedora)
+        archlinux )
+            echo_archlinux_dockerfile
+            ;;
+        fedora )
             echo_fedora_dockerfile
             ;;
-        ubuntu)
+        ubuntu )
             echo_ubuntu_dockerfile
             ;;
-        alpine)
+        alpine )
             echo_alpine_dockerfile
             ;;
     esac
