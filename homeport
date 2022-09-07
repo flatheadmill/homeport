@@ -604,6 +604,50 @@ LABEL io.homeport true
 EOF
 }
 
+function echo_gentoo_dockerfile () {
+    cat <<EOF
+# syntax=docker/dockerfile:1.3-labs
+# Use the empty image with the portage tree as the first stage
+FROM gentoo/portage:latest as portage
+
+# Gentoo stage3 is the second stage, basically an unpacked Gentoo Linux
+FROM gentoo/stage3-amd64:latest as gentoo
+
+# Copy the portage tree into the current stage
+COPY --from=portage /var/db/repos/gentoo /var/db/repos/gentoo
+
+RUN echo 'ACCEPT_KEYWORDS="~amd64"' >> /etc/portage/make.conf
+
+RUN emerge -qv app-admin/sudo
+
+RUN <<EOR
+groupadd -g 1983 homeport
+useradd -s /bin/bash -u 1983 -g 1983 -d /home/homeport homeport
+
+cat <<EOSSH > /etc/ssh/sshd_config
+AuthorizedKeysFile .ssh/authorized_keys
+PasswordAuthentication no
+UsePAM yes
+AllowTcpForwarding no
+GatewayPorts no
+X11Forwarding no
+Subsystem sftp /usr/lib/ssh/sftp-server
+EOSSH
+
+echo "homeport ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+mkdir -p /home/homeport
+mkdir -p /var/run/sshd
+EOR
+
+COPY --from=homeport/source /usr/share/homeport/ /usr/share/homeport/
+
+EXPOSE 22
+
+LABEL io.homeport true
+EOF
+}
+
 function echo_ubuntu_dockerfile () {
     cat <<EOF
 # syntax=docker/dockerfile:1.3-labs
