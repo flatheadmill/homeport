@@ -750,6 +750,9 @@ function homeport_dockerfile () {
         alpine )
             echo_alpine_dockerfile
             ;;
+        gentoo )
+            echo_gentoo_dockerfile
+            ;;
     esac
 }
 
