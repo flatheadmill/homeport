@@ -611,13 +611,14 @@ function echo_gentoo_dockerfile () {
 FROM gentoo/portage:latest as portage
 
 # Gentoo stage3 is the second stage, basically an unpacked Gentoo Linux
-FROM gentoo/stage3-amd64:latest as gentoo
+FROM gentoo/stage3:latest as gentoo
 
 # Copy the portage tree into the current stage
 COPY --from=portage /var/db/repos/gentoo /var/db/repos/gentoo
 
 RUN echo 'ACCEPT_KEYWORDS="~amd64"' >> /etc/portage/make.conf
 
+RUN which sshd
 RUN emerge -qv app-admin/sudo
 
 RUN <<EOR
